@@ -1,4 +1,4 @@
-# 09 — Lessons log (EP.1–EP.3) and owner rules
+# 09 — Lessons log (EP.1–EP.4) and owner rules
 
 Why each rule in this skill exists. Add a row when a new failure costs time; don't delete old rows.
 
@@ -23,6 +23,12 @@ Why each rule in this skill exists. Add a row when a new failure costs time; don
 | 15 | Read the skills before starting an episode; update them after | EP.3 |
 | 16 | Skills are written as `.md` files first, not committed to the shared skills repository | EP.1 |
 | 17 | Work files live on E: | standing |
+| 18 | Keep a character bible and one `Characters/` folder; every new character gets a sheet before its first clip | EP.4 |
+| 19 | Run the episode end to end; don't ask after every step | EP.4 |
+| 20 | Global channel: no Thai (non-English) text burned into the video; other languages only as optional tracks | EP.4 |
+| 21 | KEEP CONSISTENT: copy the previous episode's `build.py` + `audio_gen.py`; change only the timeline, never the design, music or labels | EP.4 |
+| 22 | Read and update skills **only** in the `digital-creator-skills` repository | EP.4 |
+| — | Rule 17 now reads: Windows work on E:; Mac work in `~/Documents/Kritchawat-Projects/Series/` | EP.4 |
 
 Decisions the owner made once for the series: "No, it's not made for kids"; altered content "No" with an
 AI-note line in the description; upload Private and decide Public per video.
@@ -71,20 +77,35 @@ steps repeat).
 | 3 | "→" drawn as empty boxes (Nunito has no glyph) | contact sheet | RR | Glyph check in `plan` |
 | 3 | A line spoken twice under a once-only subtitle; the owner had heard it once | automatic captions | RR + UP | Two bursts = said twice; word check right after Save |
 | 3 | Custom thumbnail didn't stick (set during processing); readback counted `img` elements | owner | redo | Set on the edit page; read back the picture |
+| 4 | Meta AI account changed mid-episode; project thread gone | owner | thread rebuilt | Re-upload sheets + masters by fetch/DataTransfer (`10`) |
+| 4 | Meta lost access to uploaded masters after a few turns | refusal text | 1 turn each | Attach the master with every clip prompt |
+| 4 | "Taxi Rank" wayfinding sign appeared on the canopy; meter showed "0:10" | background check, contact sheet | R ×3 | Location crops (`RANK`, `WHEEL`) on every clip of that place |
+| 4 | Window views turned photo-real ("street slides by") | contact sheet | R | "view outside stays exactly as drawn, flat cartoon" |
+| 4 | A teen's jeans turned blue; headphones moved onto his ears | contact sheet | R ×2 | Restate off-master clothing colours and accessory placement |
+| 4 | Driver looked down/right instead of at the hero | contact sheet | R | "keeps looking LEFT the whole video" |
+| 4 | Both mouths moved during part of a two-shot line | 5 fps zoom | line shortened | Keep the clean part; shorten the line |
+| 4 | A made-up hotel name was a real Camden business | web search | rename | Search every invented business name |
+| 4 | Thai burned under every subtitle and on cards; the channel is global | owner after upload | RR + UP | Rule 20 |
+| 4 | v2 re-render used a new card design and new music instead of EP.3's | owner ("KEEP CONSISTENT") | RR + UP | Rule 21: port the previous `build.py` |
+| 4 | Studio pencil on automatic captions = "Overwrite track" | dialog | none (cancelled) | Never edit the automatic track |
+| 4 | First thumbnail injection after the upload didn't stick | readback after reload | 1 retry | Inject on a freshly loaded edit page; reload and look |
+| 4 | End-screen start time didn't apply until the field lost focus | screenshot | none | Enter, then Tab; check both bars |
 
 ## 3. What the numbers say
 
-| | EP.1 | EP.2 | EP.3 |
-| --- | --- | --- | --- |
-| Clips per accepted cut | 1.7 | 2.0 | 1.2 |
-| Refusals | 1 | 4 | 2 |
-| Renders | not logged | 3 | 4 |
-| Uploads | 2 | 3 | 2 |
+| | EP.1 | EP.2 | EP.3 | EP.4 |
+| --- | --- | --- | --- | --- |
+| Clips per accepted cut | 1.7 | 2.0 | 1.2 | 1.1 |
+| Refusals | 1 | 4 | 2 | 0 |
+| Renders | not logged | 3 | 4 | 3 |
+| Uploads | 2 | 3 | 2 | 2 |
 
 - Yield improved once clips had a single character on screen and masters were detailed.
 - **No episode has shipped on the first upload.** Each re-upload came from burned-in text or sync, never from
   the picture. The cheapest protection is in this order: spell-check `burned_text.txt`, `windows`, the owner
   listen check, `drift` on the delivered file, and the word check immediately after the first Save.
+- EP.4 had no sync or wording re-upload; both of its extra renders came from **format** (Thai on screen, a new
+  design). Porting the previous `build.py` and the English-only assert remove both causes.
 - A goal for the next episode: one upload.
 
 ## 4. Corrections to earlier notes

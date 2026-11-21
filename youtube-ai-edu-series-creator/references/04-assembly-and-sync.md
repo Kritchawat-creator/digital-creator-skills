@@ -3,6 +3,39 @@
 The episode is built by a Python script, not a GUI editor: the timeline is code, every render is repeatable, and
 the same table produces the video, the chapters and the subtitle files.
 
+## 0. Fixed episode format (keep it identical in every episode)
+
+Owner rule "KEEP CONSISTENT" (EP.4): copy the previous episode's `build.py` and `audio_gen.py`; change only the
+segments, masters and paths. EP.3 and EP.4 use this section order and **exactly** this label text:
+
+1. Hook clip, banner **"Don't say this!"**, red cross + buzz
+2. Title card **"Pudding Goes to London"** / "Episode N · <Topic>" (grey, 70) + sting
+3. **"Last time on Pudding..."** + the previous cliffhanger clip
+4. Location cards **"At the <place>..."** + story clips (FAST!/SLOW tags, cross/check icons)
+5. **"Oh no, Pudding!"** / "But first... let's learn the English!"
+6. **"5 Phrases for <topic>"** → per phrase: host take 1 tag `PHRASE i/5 · listen twice`, host take 2 tag
+   `PHRASE i/5 · again` (medium crop), card badge `PHRASE i/5` + phrase / "You can also say:" / example (green)
+7. **"Common Mistake"** + wrong/right clips + red/green card + 2–4 grammar cards
+8. **"<Character>'s Fast English"** / "Can you understand him?" + FAST!/SLOW/NORMAL clips + "= …" card
+9. **"Say It With Pudding!"** / "Listen... then say it out loud!" → 5 cards badge `YOUR TURN i/5`, "Now you!",
+   voice = host take 2, yellow countdown + 4 ticks
+10. **"Quiz Time!"** / "4 questions. Answer before the timer ends!" → `Question N` (6 s countdown) + `Answer`
+11. **"Write your answers in the comments!"**
+12. **"Watch Again"** / "Now you understand every word!" + replayed story clips (no tags or icons)
+13. Cliffhanger clips + host "Find out in episode <n+1>!"
+14. End card 16 s **"Next: EP.<n+1> · <Topic>!"** / "Subscribe so you don't miss it!" + sting (end screen here)
+
+Style constants (do not change): NAVY (31,42,68), CREAM (255,246,229), YELLOW (255,201,60), RED (229,72,77),
+GREEN (46,173,107); Baloo 2 titles 112/800; Nunito lines /850; subtitle bar navy (31,42,68,215), Nunito 58/800,
+wrap 1560, 70 px above the bottom; tag pill top-left (50,44); yellow banner top-centre Baloo 64; icons at
+(W−230,300) r130 on clips and (W−200,H−200) r110 on cards; card background = the episode's master blurred 18 under
+a 0.72 cream wash; card zoom +4.5 %; 34 px yellow countdown bar; music ×0.30 ducked by `sidechaincompress`; SFX
+×0.55; two-pass loudnorm −14 LUFS / TP −1.5 + `alimiter` 0.79; H.264 crf 19, 1920×1080, 30 fps, AAC 192k.
+
+Burned text is **English only** (global channel); each segment's `th` goes only into the `.th.srt`. `plan()`
+asserts zero Thai characters on screen. Check the render with a 16-frame contact sheet next to the previous
+episode's.
+
 ## 1. Tooling
 
 - A project venv with `imageio-ffmpeg` (bundles an ffmpeg binary) and `pillow`. No system installs.
@@ -12,8 +45,12 @@ the same table produces the video, the chapters and the subtitle files.
   effects (`ding`, `buzz`, `pop`, `tick`, `whoosh`, `sting`) in pure Python in a few seconds. They are original,
   so there is nothing to license.
 - Windows console (cp874) can't print "→": run Python with `PYTHONIOENCODING=utf-8`.
-- Start from `scripts/build_example_ep3.py`: copy it to `build.py` in the episode folder and replace the
-  segments. `sync_check.py` imports it as `build`, so keep that file name.
+- Start from the **previous episode's** `build.py` (latest: `scripts/build_example_ep4_mac.py`, which is EP.3's
+  build with the EP.4 timeline): copy it to `build.py` in the episode folder and replace the segments.
+- macOS: system `python3` + Pillow and Homebrew ffmpeg work as they are (`FF = "ffmpeg"`, fonts in `fonts/`).
+  Homebrew ffmpeg has no `drawtext`/`subtitles`; the build never needed them (text is Pillow PNG overlays).
+- Clips from two Meta AI accounts can differ by ~10 dB: EP.4's `clip_gain()` measures each window and
+  level-matches it to −18 LUFS before the mix. `sync_check.py` imports it as `build`, so keep that file name.
 
 ## 2. Timeline as code
 

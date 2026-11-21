@@ -4,6 +4,10 @@ Drafts as .md files for review. **Not added to `ai-work-skills` yet** (the owner
 
 ## Use this one: `youtube-ai-edu-series-creator` (2026-11-21)
 
+> **Owner rule (2026-11-21): read and update skills only in this repository.** Updated after EP.4 "Taxi" (Mac, new
+> Meta AI account): fixed episode format and style constants (`references/04` §0), English-only burned text,
+> "copy the previous episode's `build.py`", Mac/new-account reference `10`, Studio notes `07` §6a, lessons 18–22.
+
 [youtube-ai-edu-series-creator/SKILL.md](youtube-ai-edu-series-creator/SKILL.md) is the single, reusable skill for
 the whole job. It merges the five skills below with the experience of all three episodes.
 

@@ -127,6 +127,20 @@ YouTube can't replace a video file. When burned-in text or sync is wrong:
 
 Only a caption file wrong → edit the SRT in place; no re-upload.
 
+## 6a. Notes from EP.4 (macOS, browser pane, 2026-11-21)
+
+| Step | What worked |
+| --- | --- |
+| Languages | Same on every episode: English captions (uploaded, Published) + Thai captions; title/description translations TH, ES, PT, VI, ID; automatic English untouched |
+| English SRT in the upload dialog | A **real click** on "Upload file" (a JS click does not create the input). Leave "With timing", do **not** press Continue (it opens the OS picker); inject into the new `input[type=file]`, check the first cues, Done |
+| Pasting text into JS | Print the file with `json.dumps(..., ensure_ascii=False)` and paste it as a string; never type `\"` (swap `"` to `'` and back with `.replace`) |
+| End screen times | Template "1 video, 1 subscribe" → Choose specific video. Select each element's bar, triple-click the start field, type `m:ss:ff`, Enter, then **Tab** — the bar moves only after blur. Both bars start at the end card |
+| Thumbnail | Redraw in-page on a canvas (Meta AI fbcdn art + OFL fonts from `raw.githubusercontent.com/google/fonts`), inject into `#file-loader` on the edit page, Save. **The first injection right after the upload dialog saved without changing the thumbnail**; a second one after a fresh load stuck. Reload and look at the Thumbnail block every time; a grey "…" `mqdefault` right after saving is processing, not a failure |
+| Add language menu | Long list: find the `tp-yt-paper-item` by exact text, `scrollIntoView`, then click (off-screen items fail an `offsetParent` filter) |
+| Thai captions | Click the Subtitles cell, then its pencil → real click "Upload file" → inject into the **last** `input[type=file]` → Publish |
+| Translations | Click the Title & description cell, then its pencil; fill the visible `ytgn-metadata-editor` (`textarea[1]` title, `textarea[3]` translated opening + English rest from `textarea[2]`), dispatch `input`+`change`, Publish. Move the mouse away before reading the table (hover replaces cell text with icons) |
+| Deleting the superseded upload | Only on the owner's yes. Content row → hover → ⋮ → Delete forever; check the duration in the dialog (the two uploads have the same title), tick the box, Delete; reload and list rows by video ID |
+
 ## 7. Traps
 
 - **A leftover upload dialog published a video.** The owner's drag opened the dialog in one tab; the work was

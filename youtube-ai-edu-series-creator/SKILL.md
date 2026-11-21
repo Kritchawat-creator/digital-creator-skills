@@ -6,7 +6,7 @@ description: End-to-end playbook for producing and publishing one episode of an 
 # YouTube AI Educational Series Creator
 
 One skill for the whole job: from the series plan to a Private YouTube upload that has been checked.
-It was built from three delivered episodes (*Pudding Goes to London* EP.1–EP.3, November 2026) and replaces five
+It was built from four delivered episodes (*Pudding Goes to London* EP.1–EP.4, November 2026) and replaces five
 earlier drafts (`meta-ai-video-production`, `ai-video-lipsync-qc`, `edu-video-assembly-ffmpeg`,
 `youtube-ip-safe-ai-content`, `youtube-studio-upload`). Every rule below came from a measured failure or an owner
 decision in those episodes; the history is in `references/09-lessons-log.md`.
@@ -16,6 +16,8 @@ decision in those episodes; the history is in `references/09-lessons-log.md`.
 - Doing one stage of it: script, Meta AI masters and clips, clip QC, assembly, subtitles, thumbnail, SEO metadata,
   Studio upload, or replacing a bad upload.
 - Starting a new series with the same method (new cast, new teaching language, new topic).
+- Working on macOS or with a fresh Meta AI account (EP.4 moved from Windows to a Mac and to a new Meta AI account;
+  `references/10-mac-new-account-and-end-to-end.md`).
 
 ## When NOT to Use
 - Realistic people, real public figures, or licensed songs. That needs consent and licensing work this skill
@@ -28,48 +30,60 @@ decision in those episodes; the history is in `references/09-lessons-log.md`.
 
 ## Core Workflow
 
-Work through the phases in order. Don't start a phase until the previous gate is met.
+Work through the phases in order. Don't start a phase until the previous gate is met. Run them **end to end
+without asking after each step** (owner, 2026-11-21): decide routine QC calls (regenerate, crop, trim, shorten a
+line) yourself and log them.
+
+**Series consistency (owner: "KEEP CONSISTENT").** A new episode must look and sound like the previous one. Start
+`build.py` and `audio_gen.py` by **copying the previous episode's files** and change only the timeline (clips,
+lines, cards), the masters and the paths. Never redesign cards, subtitle bar, colours, fonts, labels, music, SFX or
+loudness. The fixed section order and label text are in `references/04-assembly-and-sync.md` §0.
+
+**Global channel (owner, 2026-11-21).** Burn **English only** into the video. Other languages go only into
+caption tracks (English uploaded + Thai) and title/description translations (TH, ES, PT, VI, ID).
 
 | # | Phase | What to do | Gate before moving on | Details |
 | --- | --- | --- | --- | --- |
-| 0 | Orient | Read the series plan, the cast bible, the previous episode's script (its "As-built" section), `qc_log.txt` and upload metadata. Create the episode folder; reuse the venv, fonts and scene masters. | You can state the episode's situation, key phrases, grammar point, mistake and cliffhanger, and which masters can be reused. | `01` |
+| 0 | Orient | Read the series plan, the cast bible and `Characters/README.md` (paste prompt blocks word for word), the previous episode's script (its "As-built" section), `qc_log.txt`, upload metadata and **its `build.py`**. Check which machine and which Meta AI account you are on (`10`). Create the episode folder; reuse fonts and scene masters. | You can state the episode's situation, key phrases, grammar point, mistake and cliffhanger, and which masters can be reused. | `01` |
 | 1 | Episode design | Write `docs/<series>-epN-script.md`: structure with target times, one-speaker clip table with exact lines, host clips, cards, quiz, continuity and IP table, prompts. | Every spoken line is assigned to exactly one clip and one speaker; every on-screen word is listed. | `01` |
 | 2 | IP and policy pre-check | List the banned items for this episode (real names, logos, money, flags…) and put them into every prompt. | The continuity and IP table names specific words and objects, not just "no logos". | `08` |
-| 3 | Scene masters | One still image per location in the project's single Meta AI thread: 16:9, detailed background, fixed left/right positions, no text. Make a solo master for any character who speaks to the hero or hosts the lesson. | Each master is on-model, has no text or emblem, and is saved to `masters/`. | `02` |
+| 3 | Scene masters | One still image per location in the project's single Meta AI thread: 16:9, detailed background, fixed left/right positions, no text. Make a solo master for any character who speaks to the hero or hosts the lesson. A new speaking character gets a reference sheet (front, side, 6 expressions) in `Characters/` first; the owner picks the design. Name a business only after a web search shows no real one of that name in the city. | Each master is on-model, has no text or emblem, and is saved to `masters/`. | `02` |
 | 4 | Clips | One 10-second clip per line, animated from the master, one speaker per clip. Download each clip as it finishes. | Every scripted line has at least one candidate clip. Refusals are logged with the alternative Meta offered. | `02` |
 | 5 | Clip QC | For every clip: speech timeline, voicing line, contact sheet, face zoom on the listener, in/out points. Per location: a cross-clip montage. | `edl.tsv` holds one accepted cut per line; `qc_log.txt` holds every failure, refusal and decision. | `03` |
 | 6 | Owner listen check | Build one labelled MP4 of the clips a person must hear: new voices, intentional mistakes, weak voicing, lines with two speech bursts. | The owner has answered. Tools can't hear words. | `03` |
-| 7 | Assembly | Timeline as code (`build.py`). Run `plan` (chapters, burned-text list, glyph check) and `sync_check.py windows`, then render, then check the delivered file: sync, loudness, whole-video contact sheet. | A/V offset 0 ms (±10) at every clip to the end, about −14 LUFS and at most −1 dBTP, no silent cards, burned text spell-checked. | `04` |
+| 7 | Assembly | Timeline as code: copy the previous episode's `build.py` (same look), replace the segments. Run `plan` (chapters, burned-text list, glyph check) and `sync_check.py windows`, then render, then check the delivered file: sync, loudness, whole-video contact sheet. | A/V offset 0 ms (±10) at every clip to the end, about −14 LUFS and at most −1 dBTP, no silent cards, burned text spell-checked, **0 non-English characters burned in**, contact sheet matches the previous episode. | `04` |
 | 8 | Thumbnail | Dedicated Meta AI art without text, then local text with asserts. Check it at 1280, 320 and 168 px wide. | No text touches a character or leaves its pill; nothing sits in the bottom-right timestamp area. | `05` |
 | 9 | Metadata | Write `docs/<series>-epN-upload-metadata.md`: title, description with chapters and links, tags, settings, translations, thumbnail brief. | Chapters come from `build.py plan`; tags are under 500 characters by Studio's counter. | `06` |
 | 10 | Upload | The owner drags the file into Studio. Fill details, thumbnail, audience, English subtitles, end screen, Private. Run the automatic-captions word check right after saving, before the slow steps. Then other subtitles, translations, playlist. | Every setting is read back on the edit page, including visibility and the thumbnail picture. The word check matches the burned subtitles. | `07` |
 | 11 | Close out | Append "As-built" notes to the script, record the upload in the metadata doc, add new lessons to this skill. | Report sent with URL, duration, loudness, sync and open items. | `09` |
 
-The owner is asked at fixed points: installs and downloads, the first clip of each new voice, the listen check,
-audience and AI disclosure, anything Public, deleting an upload, and changes to an older episode.
+The owner is asked only at fixed points: installs and downloads, new character designs, the first clip of each
+new voice, the listen check, the Studio file drag, audience and AI disclosure, anything Public, deleting an upload,
+payments, and changes to an older episode.
 
 ## Project Context (Pudding Speaks English — project-specific values)
 
 | Item | Value |
 | --- | --- |
 | Series | *Pudding Goes to London*, 12 episodes planned; beginner English (CEFR A1–A2) for teens and adults worldwide; not made for kids |
-| Cast | Pudding (baby elephant, yellow backpack, no eyelashes), Ploy (Thai teen, mint hoodie), Ollie (British teen, striped scarf), Biscuit (pigeon officer, orange beak, plain navy cap; lesson host), Lily (cat) |
+| Cast | Pudding (baby elephant, yellow backpack, no eyelashes), Ploy (Thai teen, mint hoodie), Ollie (British teen, striped scarf), Biscuit (pigeon officer, orange beak, plain navy cap; lesson host), Frank (adult red fox, taxi driver, EP.4), Mabel (adult grey goose, hotel receptionist, EP.4–5; small lashes allowed), Lily (planned). Sheets in `Characters/` |
 | Format | 1920×1080, 30 fps, about 5 min; clips from Meta AI web (10 s, 1280×720, 24 fps, native speech) |
-| Folders | `E:\claude-work\pudding-ep1\` (venv, fonts, `docs\channel-plan.md`, cast bible, these skills), `E:\claude-work\pudding-ep2\`, `E:\claude-work\pudding-ep3\` |
+| Folders | Windows (EP.1–3): `E:\claude-work\pudding-ep1\` (venv, fonts, `docs\channel-plan.md`, cast bible), `…\pudding-ep2\`, `…\pudding-ep3\` (also on Drive "Learn English"). Mac (EP.4 on): `~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/` (`Characters/`, `docs/pudding-character-bible.md`, `pudding-ep4/`). |
 | Per-episode record | `docs\pudding-epN-script.md` and `docs\pudding-epN-upload-metadata.md` hold the video URL, playlist and settings. Read them for IDs; they are not repeated here. |
-| Tools | Python venv with `imageio-ffmpeg` and `pillow`; fonts Nunito and Baloo 2 (OFL); Meta AI and YouTube Studio signed in, in the desktop app's browser pane |
+| Tools | Windows: Python venv with `imageio-ffmpeg` and `pillow`. macOS: system `python3` + Pillow, Homebrew ffmpeg (no `drawtext`/`subtitles` — the build draws text as Pillow PNG overlays anyway). Fonts Nunito and Baloo 2 (OFL); Meta AI and YouTube Studio signed in, in the desktop app's browser pane |
+| Meta AI | EP.1–3: thread "Pudding the baby elephant" (old account). From EP.4: new account, thread meta.ai/prompt/1c05c8c0-… (sheets and masters re-uploaded) |
 
 Measured results (delivered files re-measured 2026-11-21):
 
-| | EP.1 Airport | EP.2 Lost Bag | EP.3 Changing Money |
-| --- | --- | --- | --- |
-| Clips downloaded → accepted cuts | 34 → 20 | 43 → 22 | 26 → 21 (2 more refused) |
-| Duration | 5:05.2 | 5:05.0 | 5:07.2 |
-| Loudness / true peak | −15.7 LUFS / −1.3 dBTP (one-pass) | −14.6 / −1.2 | −14.5 / −1.5 |
-| Renders → uploads | not logged → 2 | 3 → 3 | 4 → 2 |
-| Why it was re-uploaded | run-together words in a burned subtitle | subtitle text didn't match the audio; then audio drift | a line spoken twice under a once-only subtitle |
+| | EP.1 Airport | EP.2 Lost Bag | EP.3 Changing Money | EP.4 Taxi |
+| --- | --- | --- | --- | --- |
+| Clips downloaded → accepted cuts | 34 → 20 | 43 → 22 | 26 → 21 (2 more refused) | 31 → 28 (6 host clips give 2 cuts each), 0 refused |
+| Duration | 5:05.2 | 5:05.0 | 5:07.2 | 5:11.1 |
+| Loudness / true peak | −15.7 LUFS / −1.3 dBTP (one-pass) | −14.6 / −1.2 | −14.5 / −1.5 | −14.6 / −1.2 |
+| Renders → uploads | not logged → 2 | 3 → 3 | 4 → 2 | 3 → 2 |
+| Why it was re-uploaded | run-together words in a burned subtitle | subtitle text didn't match the audio; then audio drift | a line spoken twice under a once-only subtitle | Thai burned under every subtitle (channel is global); then a new card design instead of EP.3's ("KEEP CONSISTENT") |
 
-Every re-upload came from burned-in text or sync, which YouTube can't replace in place. Phases 6, 7 and the early
+Every re-upload came from burned-in text, sync or look, which YouTube can't replace in place. Phases 6, 7 and the early
 word check in phase 10 exist to catch those before the full Studio work.
 
 ## Reference Guide
@@ -85,6 +99,7 @@ word check in phase 10 exist to catch those before the full Studio work.
 | `references/07-studio-upload.md` | Every Studio step, selectors, the word check, re-uploads |
 | `references/08-ip-and-policy.md` | Copyright, trademark, voices, music, fonts, audience, AI tool refusals |
 | `references/09-lessons-log.md` | Why each rule exists; owner rules; what each mistake cost |
+| `references/10-mac-new-account-and-end-to-end.md` | Working on a Mac, moving to a new Meta AI account, files the browser pane can't move, running end to end |
 
 | Script (`scripts/`) | Use |
 | --- | --- |
@@ -101,6 +116,9 @@ word check in phase 10 exist to catch those before the full Studio work.
 | `final_qc.sh FILE` | Duration, whole-video contact sheets, loudness |
 | `thumbnail_example_ep3.py` | Thumbnail text layout with overflow asserts |
 | `studio_inject.js` | Attach a file in Studio without a file picker |
+| `build_example_ep4_mac.py` | EP.4 = EP.3's build ported to the Mac with the EP.4 timeline: location crops, two-account level match (`clip_gain`), `plan` asserts 0 Thai characters burned in |
+| `dlqc.py NAME URL` · `zoom2.py NAME START END CROP` · `preview.py` | Mac QC: download + speech bursts + 10-frame sheet; 5 fps face strip; labelled preview of all accepted cuts |
+| `thumbnail_example_ep4.py` | EP.4 thumbnail in the EP.3 layout |
 
 Set `PY` to the venv's Python before running the shell scripts
 (`export PY=/e/claude-work/pudding-ep1/.venv/Scripts/python.exe`). They run from the episode folder and expect
@@ -166,7 +184,13 @@ card(3.0, badge=("Answer", GREEN), lines=[L("How much is it?", GREEN, 92)], icon
 - Upload Private. Read back every setting after saving. Run the automatic-captions word check before the slow
   Studio steps.
 - Record each asset's source and licence, and each upload's state, in the episode docs.
-- Put work files on E: (owner rule): `E:\claude-work\<series>-epN\`.
+- Put work files where the owner keeps them: Windows `E:\claude-work\<series>-epN\`; Mac `Series/pudding-speaks-english/<series>-epN/`.
+- Copy the previous episode's `build.py` and `audio_gen.py` for the look and sound; change only the timeline.
+- Burn English only (global channel). `build.py plan` asserts zero Thai characters on screen.
+- Re-attach the scene master with every clip prompt in a long or new Meta AI thread (Meta loses access to
+  uploaded images after a few turns).
+- Plan a crop for any location where the model keeps inventing text (canopy signs, meters) and use it on every
+  clip of that location.
 
 **MUST NOT DO**
 - Reword or retry a prompt to get around an AI tool's refusal. Ask what it can make instead and accept that.
@@ -178,6 +202,8 @@ card(3.0, badge=("Answer", GREEN), lines=[L("How much is it?", GREEN, 92)], icon
 - Set the audience, AI disclosure or Public visibility, delete an upload, or change an older episode without the
   owner saying so in chat.
 - Click through a leftover upload dialog in another tab: its visibility step can have Public preselected.
+- Click the pencil on "English (automatic captions)": it opens "Overwrite track" for the uploaded English captions.
+- Redesign the episode format (cards, labels, music) without the owner asking for it.
 - Commit or push to a skills repository without the owner's permission for that commit.
 
 ## Decision Frameworks
@@ -195,6 +221,10 @@ card(3.0, badge=("Answer", GREEN), lines=[L("How much is it?", GREEN, 92)], icon
 | Only a caption file is wrong | Edit the SRT in place |
 | Licence or right is unclear | Leave the asset out and use an owned or clearly licensed one |
 | Previous episode is Private while the new one would link to it | Tell the owner viewers can't open it; let them choose when to link |
+| Meta AI thread or account is gone | New thread: upload the sheets, then the masters, by in-page fetch → DataTransfer (`10`); check one clip per recurring voice with the owner |
+| The model keeps putting text on a background (sign, meter, screen) | Crop it out for every clip of that location before regenerating more |
+| A two-character clip where the listener's mouth moves during part of the line | Keep the clean part and shorten the line; don't splice two takes of a static shot |
+| The owner says "keep consistent" | Compare frames with the previous episode side by side; port its code instead of matching by eye |
 
 ## Common Pitfalls
 
@@ -219,6 +249,12 @@ The ones that cost the most, most expensive first:
     limiter.
 11. **A font without the glyph** ("→" in Nunito) drawing empty boxes. `build.py plan` asserts glyph coverage.
 12. **A stale upload dialog** making a video Public.
+13. **Changing the look between episodes.** EP.4 v2 used a new card design and new music; the owner rejected it
+    ("KEEP CONSISTENT") and it cost a re-render and a re-upload. Port the previous `build.py`.
+14. **Non-English text burned in on a global channel.** EP.4 v1 carried Thai under every subtitle → re-render and
+    re-upload. Keep other languages in caption tracks.
+15. **Losing the Meta AI thread** when the account changes. Save every sheet and master as PNG as soon as it is
+    accepted (signed image URLs expire in about 4 days).
 
 ## Output Templates
 
@@ -235,7 +271,7 @@ Final report to the owner:
 ```
 Video: https://youtu.be/<id> (Private) · out/<episode>.mp4 · 5:07 · −14.5 LUFS / −1.5 dBTP · A/V 0 ms at every clip
 Clips: 26 generated, 2 refused (alternatives accepted), 21 accepted cuts
-Set: title, description + chapters, 21 tags (415/500), not made for kids, altered content: No, thumbnail,
+Set: title, description + chapters, 22 tags (458/500), not made for kids, altered content: No, thumbnail,
      EN + TH subtitles, title/description in TH ES PT VI ID, end screen → previous episode + subscribe, playlist
 Read back: visibility Private ✓ thumbnail picture ✓ · Word check: every spoken line matches the burned subtitles
 Open: <questions for the owner, for example linking this episode from the previous one>
