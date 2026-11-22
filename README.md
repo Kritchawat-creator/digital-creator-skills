@@ -2,6 +2,31 @@
 
 Drafts as .md files for review. **Not added to `ai-work-skills` yet** (the owner asked for md files first).
 
+## Vertical shorts: `tiktok-ai-edu-shorts-creator` (2026-11-21)
+
+[tiktok-ai-edu-shorts-creator/SKILL.md](tiktok-ai-edu-shorts-creator/SKILL.md) covers one 9:16 lesson short for
+TikTok, from the script to a filled-in TikTok Studio post that is **scheduled only for a slot the owner approved**
+(never posted now on its own). Built from Talkoro TikTok EP01 "Open the light?", refined on EP02-EP04. Same layout as the YouTube skill: `SKILL.md` (phases and gates), `references/01`–`06`,
+and `scripts/` (macOS, path-independent, tested on EP01: identical output, 0 ms drift).
+
+What from that session became skill content, and what didn't:
+
+| What was done in EP01 | Skill? | Where it lives |
+| --- | --- | --- |
+| TikTok lesson design: hook, one point, loop, quiz, English only, shot geometry, 180° rule | Yes, every episode | `references/01` |
+| 9:16 masters, clip and cover prompt skeletons, typing into Meta AI, poll helpers | Yes, every episode | `references/02`, `scripts/meta_page.js` |
+| Clip QC (timeline, voicing, mouth/jaw strips, whisper, prop-logo crops, montage) | Yes, every clip | `references/03`, `scripts/qc.sh mouth.sh zoom.sh asr.sh` |
+| Frame-aligned rough cut + drift check on the delivered file | Yes, every episode | `scripts/build.sh drift.py` |
+| Cover 3:4 crop check, English SRT sidecar, caption format | Yes | `references/04`, `scripts/make_srt.py` |
+| TikTok Studio web: description, Edit -> Text overlays, AI label, cover check, scheduling an approved slot, no-draft rule | Yes, every post | `references/05`, `scripts/tiktok_studio.js` |
+| Series consistency: character-drift guard, new location per episode, cross-episode montage (EP02-EP04) | Yes, every episode of a series | `references/01`-`03` |
+| Lessons with evidence + report outline | Yes, grows each episode | `references/06` |
+| EP01's script, prompts, cut times | No: episode data | `Series/talkoro-tiktok/ep01-open-the-light/` (worked example) |
+| Character prompt blocks, Meta AI chat link | No: project data | the cast bible |
+| Owner preferences (English only, no laughs, Meta makes every image, never post alone) | No: memory | cited as constraints only |
+| Caption/hashtag strategy, posting time | Not yet | needs ~3 posted episodes with analytics |
+| Chrome extension not connecting, session hand-offs | No: one-off environment issues | — |
+
 ## Use this one: `youtube-ai-edu-series-creator` (2026-11-21)
 
 > **Owner rule (2026-11-21): read and update skills only in this repository.** Updated after EP.4 "Taxi" (Mac, new
