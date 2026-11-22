@@ -48,3 +48,13 @@ Run masters → clips → QC → assembly → thumbnail → metadata → Studio 
 decision in `qc_log.txt`. Stop only for: Public, deleting an upload, installs of new software, the Studio drag,
 payments, and creative choices the plan leaves open (new character designs). Send one report at the end, with the
 open items.
+
+## 6. Attaching masters and sending prompts from page JS (EP.5, 2026-11-21)
+
+| Need | What works |
+| --- | --- |
+| Re-attach a master **generated in the thread** | Its `scontent…/t39.105495-…webp` URL is CORS-readable: `fetch(url)` → `File` → `DataTransfer` → the chat's `input[type=file]` + `change` |
+| Re-attach a master that was only **uploaded** to the thread | `cdn.fbsbx.com` attachment URLs send no CORS header (fetch and crossOrigin canvas both fail); `localhost` is blocked by meta.ai's CSP `connect-src`; `window.open` replaces the pane's tab; clipboard write is denied; the "+" button opens an OS picker the browser tools can't drive. Working fallback: compress the PNG to WebP (1280 px, q80, ~40 KB), send it as 4 base64 chunks into the page, check SHA-256 against the local file, and store it in `localStorage` (survives reloads). Better: generate the masters inside the thread so they have t39 URLs |
+| Type a prompt | `[contenteditable=true]` is a Lexical editor: `execCommand('insertText')` does nothing; dispatch `new ClipboardEvent('paste', {clipboardData: dt})` with `dt.setData('text/plain', prompt)`. Clear leftovers with a real cmd+a + Delete first. Send = `button[aria-label="Send"]` |
+| Generate many clips | An async queue in the page (`scripts/meta_queue_ep5.js`): attach → paste → Send → poll for a new `video.currentSrc` (≤180 s) → store the URL → 5 s pause → next; stop on refusal text. 13 clips in ~13 min unattended; download each with `dlqc.py` meanwhile |
+| Find which thread image is which | Download candidate t39 images and diff them against the local master (`ImageChops.difference` mean = 0 for the same picture) |

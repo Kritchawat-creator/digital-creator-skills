@@ -1,4 +1,4 @@
-# 09 — Lessons log (EP.1–EP.4) and owner rules
+# 09 — Lessons log (EP.1–EP.5) and owner rules
 
 Why each rule in this skill exists. Add a row when a new failure costs time; don't delete old rows.
 
@@ -90,15 +90,23 @@ steps repeat).
 | 4 | Studio pencil on automatic captions = "Overwrite track" | dialog | none (cancelled) | Never edit the automatic track |
 | 4 | First thumbnail injection after the upload didn't stick | readback after reload | 1 retry | Inject on a freshly loaded edit page; reload and look |
 | 4 | End-screen start time didn't apply until the field lost focus | screenshot | none | Enter, then Tab; check both bars |
+| 5 | The thread's uploaded masters (cdn.fbsbx.com) can't be fetched by the meta.ai page (no CORS); localhost is blocked by its CSP; the pane's "+" opens an OS picker; Chrome extension disconnected | fetch errors | ~1 h of workarounds | Generate new masters **in** the thread (t39 URLs are CORS-readable); for an uploaded-only master send its bytes once as base64 chunks with a SHA-256 check and keep them in the page's localStorage (`10` §6) |
+| 5 | `execCommand('insertText')` didn't reach Meta AI's prompt box | readback | none | Dispatch a `paste` ClipboardEvent; clear the box with cmd+a / Delete first (`10` §6) |
+| 5 | Wet umbrella → Meta drew rain drips running down the teen's face (looks like tears) in 2 desk clips | 5 fps zoom | R ×2 | "his hair and face are DRY, only the umbrella is wet" |
+| 5 | Listener's mouth opened during the speaker's short line (D03 end, D07 whole line) | 5 fps zoom | R ×2 | "<Listener>'s mouth stays shut the whole time; he only listens" fixed it |
+| 5 | Listener's mouth moved during "Oh no!" in **both** takes (Meta gives exclamations to both characters) | 5 fps zoom | line shortened | Keep the clean sentence; don't write a two-shot line that starts with an exclamation |
+| 5 | Plan with measured windows ran 5:29 (three-clip recap) | `build.py plan` | none | Watch Again 7 → 4 clips, 4th grammar card dropped; run `plan` with estimates right after writing the timeline |
+| 5 | A desk master came back with Pudding plain grey | master review | 1 edit | Ask Meta to edit only the skin colour of the image it just made ("change ONLY …, keep everything else") |
+| 5 | The owner asked to schedule instead of Private ("Schedule เสาร์หน้า 08:00") | owner | none | Schedule panel in the upload dialog: date, time list item, time zone GMT+7; read back "Video scheduled … at 8:00 AM" and the content list |
 
 ## 3. What the numbers say
 
-| | EP.1 | EP.2 | EP.3 | EP.4 |
-| --- | --- | --- | --- | --- |
-| Clips per accepted cut | 1.7 | 2.0 | 1.2 | 1.1 |
-| Refusals | 1 | 4 | 2 | 0 |
-| Renders | not logged | 3 | 4 | 3 |
-| Uploads | 2 | 3 | 2 | 2 |
+| | EP.1 | EP.2 | EP.3 | EP.4 | EP.5 |
+| --- | --- | --- | --- | --- | --- |
+| Clips per accepted cut | 1.7 | 2.0 | 1.2 | 1.1 | 1.2 (26 clips / 21 lines) |
+| Refusals | 1 | 4 | 2 | 0 | 0 |
+| Renders | not logged | 3 | 4 | 3 | **1** |
+| Uploads | 2 | 3 | 2 | 2 | **1** |
 
 - Yield improved once clips had a single character on screen and masters were detailed.
 - **No episode has shipped on the first upload.** Each re-upload came from burned-in text or sync, never from
@@ -106,7 +114,10 @@ steps repeat).
   listen check, `drift` on the delivered file, and the word check immediately after the first Save.
 - EP.4 had no sync or wording re-upload; both of its extra renders came from **format** (Thai on screen, a new
   design). Porting the previous `build.py` and the English-only assert remove both causes.
-- A goal for the next episode: one upload.
+- A goal for the next episode: one upload. **EP.5 met it** (one render, one upload): EP.4's `build.py` ported with only
+  the timeline changed, `windows` 0, listen check passed, drift 0 ms on the delivered file before the drag.
+- EP.5's only retakes were listener faults in two-shots (mouth, wet face); adult-alone (Mabel) and host clips all
+  passed first time.
 
 ## 4. Corrections to earlier notes
 

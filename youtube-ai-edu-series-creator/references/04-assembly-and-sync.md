@@ -16,7 +16,7 @@ segments, masters and paths. EP.3 and EP.4 use this section order and **exactly*
 6. **"5 Phrases for <topic>"** → per phrase: host take 1 tag `PHRASE i/5 · listen twice`, host take 2 tag
    `PHRASE i/5 · again` (medium crop), card badge `PHRASE i/5` + phrase / "You can also say:" / example (green)
 7. **"Common Mistake"** + wrong/right clips + red/green card + 2–4 grammar cards
-8. **"<Character>'s Fast English"** / "Can you understand him?" + FAST!/SLOW/NORMAL clips + "= …" card
+8. **"<Character>'s Fast English"** / "Can you understand him?" (her? for a female speaker, EP.5 Mabel — the only label that changes) + FAST!/SLOW/NORMAL clips + "= …" card
 9. **"Say It With Pudding!"** / "Listen... then say it out loud!" → 5 cards badge `YOUR TURN i/5`, "Now you!",
    voice = host take 2, yellow countdown + 4 ticks
 10. **"Quiz Time!"** / "4 questions. Answer before the timer ends!" → `Question N` (6 s countdown) + `Answer`
@@ -31,6 +31,10 @@ wrap 1560, 70 px above the bottom; tag pill top-left (50,44); yellow banner top-
 (W−230,300) r130 on clips and (W−200,H−200) r110 on cards; card background = the episode's master blurred 18 under
 a 0.72 cream wash; card zoom +4.5 %; 34 px yellow countdown bar; music ×0.30 ducked by `sidechaincompress`; SFX
 ×0.55; two-pass loudnorm −14 LUFS / TP −1.5 + `alimiter` 0.79; H.264 crf 19, 1920×1080, 30 fps, AAC 192k.
+
+Length budget (EP.5): a three-clip "Last time" recap (≈18 s) instead of one clip (≈7 s) pushed the measured plan to
+5:29. Trim in this order: Watch Again to 4 clips, then the last extra grammar card. Keep the 14 sections and labels.
+Card background = the episode's own main master blurred (EP.4 `taxi_master`, EP.5 `desk_master`).
 
 Burned text is **English only** (global channel); each segment's `th` goes only into the `.th.srt`. `plan()`
 asserts zero Thai characters on screen. Check the render with a 16-frame contact sheet next to the previous

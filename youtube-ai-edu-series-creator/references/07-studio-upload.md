@@ -141,6 +141,17 @@ Only a caption file wrong → edit the SRT in place; no re-upload.
 | Translations | Click the Title & description cell, then its pencil; fill the visible `ytgn-metadata-editor` (`textarea[1]` title, `textarea[3]` translated opening + English rest from `textarea[2]`), dispatch `input`+`change`, Publish. Move the mouse away before reading the table (hover replaces cell text with icons) |
 | Deleting the superseded upload | Only on the owner's yes. Content row → hover → ⋮ → Delete forever; check the duration in the dialog (the two uploads have the same title), tick the box, Delete; reload and list rows by video ID |
 
+## 6b. Notes from EP.5 (2026-11-21, one upload)
+
+| Step | What worked |
+| --- | --- |
+| Reuse details | Upload dialog → "Reuse details" → previous episode tile → keep all ticks → Reuse: carries playlist, tags, language, category, Shorts remixing; then overwrite title/description (`#textbox` + `execCommand('insertText')`) and tags (chip bar `#clear-button`, insert the comma list + Enter) |
+| Schedule (owner asked) | Visibility step → `#second-container-expand-button` (Schedule) → date picker (click the day) → time field opens a list (`find` "8:00 AM" option, scroll_to, click) → time-zone list (first item = GMT+0700 local) → "Schedule". Read back the "Video scheduled … set to public on <date> at <time>" dialog and the Content list ("Scheduled", date) |
+| End-screen readback | Opening the saved end screen on the edit page to read it back leaves a modal that Escape and "Discard changes" (with nothing changed) don't close; reload the edit page to leave it (the saved end screen is unaffected) |
+| End screen | Fields often keep the old start until the bar is reselected: type the start, Tab, Tab, click the empty timeline, then click each bar and zoom on its start field; both must read 4:50:03-style values |
+| Thumbnail canvas | `FontFace('…','url(https://raw.githubusercontent.com/google/fonts/main/ofl/baloo2/Baloo2%5Bwght%5D.ttf)',{weight:'400 800'})` and Nunito `{weight:'200 1000'}`; Pillow's `d.text((x,y))` top = canvas baseline `y + ascent` (`font.getmetrics()[0]`); Pillow `stroke_width=10` = canvas `lineWidth=20` + `lineJoin='round'`. Check `measureText` width against Pillow's `textlength` (EP.5: 348.9 vs 348). Inject into `ytcp-video-thumbnail-editor #file-loader` on a freshly loaded edit page, Save — stuck first try |
+| Translations | `Add language` → `tp-yt-paper-item` by exact name for all five first; then per row: real hover on the Title & description cell, click its pencil, check the editor header reads "English\n<Language>", fill `textarea[1]` / `textarea[3]` with the value setter + `input`/`change`, Publish (button inside `ytgn-metadata-editor`). The dialog can take ~3 s to open; retry the header check instead of filling a stale editor |
+
 ## 7. Traps
 
 - **A leftover upload dialog published a video.** The owner's drag opened the dialog in one tab; the work was

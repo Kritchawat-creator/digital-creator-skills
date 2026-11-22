@@ -63,6 +63,14 @@ the entire video, <silent action>. <Banned items again>. No narration, no music,
 laughs. No laughing.
 ```
 
+**Listener and continuity clauses added in EP.5** (each fixed a measured failure):
+- "<Listener>'s mouth stays shut the whole time; he only listens." — fixed a teen talking along with a short question.
+- "<Teen>'s hair and face are DRY: NO water drops on his face or hair (only his closed umbrella is wet)." — a wet
+  umbrella in the master made Meta add drips running down his face.
+- Don't open a two-shot line with an exclamation ("Oh no! …"): the listener's mouth moved on it in 2/2 takes.
+- An edit of the image Meta just made ("Change ONLY Pudding's skin colour …, keep everything else exactly the same")
+  fixed an off-model colour without changing the layout.
+
 **Two-take host line:** "says it TWICE: slowly, then a one-second pause, then at natural speed". Measured gaps
 between takes were 2.8–4.5 s and take 2 started anywhere from 5.9 to 7.0 s. Never assume where take 2 is; read
 it from the timeline (`03`).

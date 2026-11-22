@@ -6,7 +6,7 @@ description: End-to-end playbook for producing and publishing one episode of an 
 # YouTube AI Educational Series Creator
 
 One skill for the whole job: from the series plan to a Private YouTube upload that has been checked.
-It was built from four delivered episodes (*Pudding Goes to London* EP.1–EP.4, November 2026) and replaces five
+It was built from five delivered episodes (*Pudding Goes to London* EP.1–EP.5, November 2026) and replaces five
 earlier drafts (`meta-ai-video-production`, `ai-video-lipsync-qc`, `edu-video-assembly-ffmpeg`,
 `youtube-ip-safe-ai-content`, `youtube-studio-upload`). Every rule below came from a measured failure or an owner
 decision in those episodes; the history is in `references/09-lessons-log.md`.
@@ -26,7 +26,8 @@ decision in those episodes; the history is in `references/09-lessons-log.md`.
 - Legal disputes or takedowns. Escalate to the owner and a lawyer.
 - Deciding the audience setting (made for kids), AI disclosure or Public visibility. The owner decides; this skill
   only prepares and applies their decision.
-- Shorts. The channel plan has Short templates, but no Short has been built, so there are no measured lessons yet.
+- Shorts / vertical 9:16 clips. Use `tiktok-ai-edu-shorts-creator` (built from Talkoro TikTok EP01, 2026-11-21): it
+  covers 9:16 Meta AI masters and clips, macOS QC scripts, the rough cut, cover, SRT and TikTok Studio web.
 
 ## Core Workflow
 
@@ -44,7 +45,7 @@ caption tracks (English uploaded + Thai) and title/description translations (TH,
 
 | # | Phase | What to do | Gate before moving on | Details |
 | --- | --- | --- | --- | --- |
-| 0 | Orient | Read the series plan, the cast bible and `Characters/README.md` (paste prompt blocks word for word), the previous episode's script (its "As-built" section), `qc_log.txt`, upload metadata and **its `build.py`**. Check which machine and which Meta AI account you are on (`10`). Create the episode folder; reuse fonts and scene masters. | You can state the episode's situation, key phrases, grammar point, mistake and cliffhanger, and which masters can be reused. | `01` |
+| 0 | Orient | Read the series plan (*Pudding:* the season table, situation / phrases / grammar / cliffhanger per episode, is in Drive `pudding-ep1/docs/channel-plan.md` §5 — the next episode's topic and the cliffhanger come from there, not from memory), the cast bible and `Characters/README.md` (paste prompt blocks word for word), the previous episode's script (its "As-built" section), `qc_log.txt`, upload metadata and **its `build.py`**. Check which machine and which Meta AI account you are on (`10`). Create the episode folder; reuse fonts and scene masters. | You can state the episode's situation, key phrases, grammar point, mistake and cliffhanger, and which masters can be reused. | `01` |
 | 1 | Episode design | Write `docs/<series>-epN-script.md`: structure with target times, one-speaker clip table with exact lines, host clips, cards, quiz, continuity and IP table, prompts. | Every spoken line is assigned to exactly one clip and one speaker; every on-screen word is listed. | `01` |
 | 2 | IP and policy pre-check | List the banned items for this episode (real names, logos, money, flags…) and put them into every prompt. | The continuity and IP table names specific words and objects, not just "no logos". | `08` |
 | 3 | Scene masters | One still image per location in the project's single Meta AI thread: 16:9, detailed background, fixed left/right positions, no text. Make a solo master for any character who speaks to the hero or hosts the lesson. A new speaking character gets a reference sheet (front, side, 6 expressions) in `Characters/` first; the owner picks the design. Name a business only after a web search shows no real one of that name in the city. | Each master is on-model, has no text or emblem, and is saved to `masters/`. | `02` |
@@ -75,13 +76,13 @@ payments, and changes to an older episode.
 
 Measured results (delivered files re-measured 2026-11-21):
 
-| | EP.1 Airport | EP.2 Lost Bag | EP.3 Changing Money | EP.4 Taxi |
-| --- | --- | --- | --- | --- |
-| Clips downloaded → accepted cuts | 34 → 20 | 43 → 22 | 26 → 21 (2 more refused) | 31 → 28 (6 host clips give 2 cuts each), 0 refused |
-| Duration | 5:05.2 | 5:05.0 | 5:07.2 | 5:11.1 |
-| Loudness / true peak | −15.7 LUFS / −1.3 dBTP (one-pass) | −14.6 / −1.2 | −14.5 / −1.5 | −14.6 / −1.2 |
-| Renders → uploads | not logged → 2 | 3 → 3 | 4 → 2 | 3 → 2 |
-| Why it was re-uploaded | run-together words in a burned subtitle | subtitle text didn't match the audio; then audio drift | a line spoken twice under a once-only subtitle | Thai burned under every subtitle (channel is global); then a new card design instead of EP.3's ("KEEP CONSISTENT") |
+| | EP.1 Airport | EP.2 Lost Bag | EP.3 Changing Money | EP.4 Taxi | EP.5 Hotel Check-in |
+| --- | --- | --- | --- | --- | --- |
+| Clips downloaded → accepted cuts | 34 → 20 | 43 → 22 | 26 → 21 (2 more refused) | 31 → 28 (6 host clips give 2 cuts each), 0 refused | 26 → 26 cuts from 21 clips (5 retakes), 0 refused |
+| Duration | 5:05.2 | 5:05.0 | 5:07.2 | 5:11.1 | 5:06.1 |
+| Loudness / true peak | −15.7 LUFS / −1.3 dBTP (one-pass) | −14.6 / −1.2 | −14.5 / −1.5 | −14.6 / −1.2 | −14.6 / −1.2 |
+| Renders → uploads | not logged → 2 | 3 → 3 | 4 → 2 | 3 → 2 | **1 → 1** |
+| Why it was re-uploaded | run-together words in a burned subtitle | subtitle text didn't match the audio; then audio drift | a line spoken twice under a once-only subtitle | Thai burned under every subtitle (channel is global); then a new card design instead of EP.3's ("KEEP CONSISTENT") | — (first episode shipped on one render and one upload: EP.4's `build.py` ported, listen check, `windows`, drift before the drag) |
 
 Every re-upload came from burned-in text, sync or look, which YouTube can't replace in place. Phases 6, 7 and the early
 word check in phase 10 exist to catch those before the full Studio work.
@@ -119,6 +120,9 @@ word check in phase 10 exist to catch those before the full Studio work.
 | `build_example_ep4_mac.py` | EP.4 = EP.3's build ported to the Mac with the EP.4 timeline: location crops, two-account level match (`clip_gain`), `plan` asserts 0 Thai characters burned in |
 | `dlqc.py NAME URL` · `zoom2.py NAME START END CROP` · `preview.py` | Mac QC: download + speech bursts + 10-frame sheet; 5 fps face strip; labelled preview of all accepted cuts |
 | `thumbnail_example_ep4.py` | EP.4 thumbnail in the EP.3 layout |
+| `build_example_ep5_mac.py` | EP.5 = EP.4's build with the EP.5 timeline (three-clip recap, card background = the episode's own master); the latest template to copy |
+| `listen.py LIST OUT.mp4` · `zoomset.py OUT CROP NAME:START:END …` | Mac listen-check MP4 (labelled parts, −16 LUFS); stacked 5 fps face strips for several clips at once (EP.5) |
+| `meta_queue_ep5.js` | Meta AI page helpers (EP.5): paste a prompt into the Lexical box, attach a master by fetch or from localStorage, run a queue of clip prompts unattended and collect the clip URLs |
 
 Set `PY` to the venv's Python before running the shell scripts
 (`export PY=/e/claude-work/pudding-ep1/.venv/Scripts/python.exe`). They run from the episode folder and expect
@@ -191,6 +195,10 @@ card(3.0, badge=("Answer", GREEN), lines=[L("How much is it?", GREEN, 92)], icon
   uploaded images after a few turns).
 - Plan a crop for any location where the model keeps inventing text (canopy signs, meters) and use it on every
   clip of that location.
+- Run `build.py plan` with estimated windows as soon as the timeline is written, and again with measured windows:
+  a three-clip "Last time" recap adds ~11 s (EP.5 measured 5:29 → trimmed Watch Again to 4 clips + one grammar card).
+- Scheduling Public is the owner's call; when they give a date ("Schedule next Saturday 08:00"), resolve it against
+  today's date, check Studio's time zone (GMT+7 local on this channel) and read back the "Video scheduled" text.
 
 **MUST NOT DO**
 - Reword or retry a prompt to get around an AI tool's refusal. Ask what it can make instead and accept that.
@@ -225,6 +233,8 @@ card(3.0, badge=("Answer", GREEN), lines=[L("How much is it?", GREEN, 92)], icon
 | The model keeps putting text on a background (sign, meter, screen) | Crop it out for every clip of that location before regenerating more |
 | A two-character clip where the listener's mouth moves during part of the line | Keep the clean part and shorten the line; don't splice two takes of a static shot |
 | The owner says "keep consistent" | Compare frames with the previous episode side by side; port its code instead of matching by eye |
+| A listener's mouth moves during a short exclamation ("Oh no!") in a two-shot | Twice in EP.5, even with "mouth stays shut": drop the exclamation and keep the clean sentence (or give it to an adult-alone/solo shot) |
+| A teen with a wet umbrella in the master | Meta adds rain drips running down his face (reads as tears): add "his hair and face are DRY, only the umbrella is wet" to every prompt |
 
 ## Common Pitfalls
 
