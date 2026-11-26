@@ -68,8 +68,40 @@ laughs. No laughing.
 - "<Teen>'s hair and face are DRY: NO water drops on his face or hair (only his closed umbrella is wet)." — a wet
   umbrella in the master made Meta add drips running down his face.
 - Don't open a two-shot line with an exclamation ("Oh no! …"): the listener's mouth moved on it in 2/2 takes.
+- An adult-alone master for a place that already exists (EP.8): attach **both** the place master and the character sheet in
+  one prompt ("Here are two images: the canal image (for the place, the evening light and the style) and the Walter sheet
+  (for EXACTLY how Walter looks)"). Place only → the design drifted (no trousers, wrong side); sheet only → a different,
+  daytime place.
+- Lily drew eyebrows in a new place (EP.8 park) although her master had none: keep "NO eyelashes and NO eyebrows … nothing
+  drawn above her eyes" in every prompt for a character whose sheet has plain dot eyes.
 - An edit of the image Meta just made ("Change ONLY Pudding's skin colour …, keep everything else exactly the same")
   fixed an off-model colour without changing the layout.
+
+- New adult character (EP.9 Rosa): animate from a **waist-up** master (a small face in a wide master is redrawn), say "eyes are SOLID
+  BLACK round dots with one tiny white highlight … NO white eyeball, NO iris, NO eyelid lines. <She> keeps her head in the same
+  position and only her mouth moves", no nod or tilt. If Meta adds the same small detail (brow, whiskers) in every speaking clip, put it
+  into the masters with an edit prompt ("change ONLY … keep everything else") and into the bible instead of fighting it.
+- EP.11: a female adult kept getting lash flicks or a pointed eye corner with "NO eyelashes" in the prompt. What worked (5 of 5): no name, no she/her,
+  no eyelash word ("The capybara in the attached image … The eye is a plain black button: one perfectly round solid black ball … nothing attached
+  to it"), "a calm, friendly face" instead of "smiles", and the voice described on its own ("a warm adult woman's voice").
+- EP.11: say what must NOT change in a decorated background ("ONLY the pale-yellow planet has a ring", "the colours stay the same soft pale pastel
+  colours as in the attached image"); Meta copies a striking detail (the ring) to the object next to it.
+- "I couldn't attach the image. Want me to make it again?" is a delivery fault, not a refusal: answer "Yes, please make it again: the image exactly as
+  described in my last message." (no attachment). Sending the full prompt again failed 6 times, the answer worked first try.
+- Editing prompts that worked: "remove the swan inside the bandstand", "remove Lily completely, keep Rosa exactly as she is now".
+- Attach check: `input.files` resets after `change` ("attach … 0"); count the composer's `blob:` previews instead (1 or 2).
+
+- EP.12 (warm evening light): name every object whose colour must stay ("the apples on the tree stay GREEN", "the insides of his ears stay the same pale PINK", eye
+  "PURE BLACK, NOT brown"). Adult voices: "bright, friendly, lively, not deep". Group shot: all mouths closed in the master + a listener block for the whole group.
+- EP.13 (return to an old place): do NOT attach the old episode's master together with the new character reference: Meta keeps the old drawing style (lavender skin, two
+  brows, 2 images lost). Attach only the newest character master and describe the old place in words; it came out on-model first try.
+- EP.13: never leave something in the scene description that is not in the attached master (trolleys grew into the picture); say "behind the windows ONLY plain pale sky",
+  "the hall is completely EMPTY: NO travellers", "pale GREY pots". Remove plants behind heads in the master (read as leaves on the head; a leaf badge grew on the backpack).
+- EP.13: a friend in every hero shot: over-the-shoulder works for a human friend (back of head at the edge); for an animal friend the back view reads as looking away or is drawn
+  realistic. Use the friend in side view, mouth closed, listening (only the hero speaks) or the friends frame.
+- EP.13: an edited-away far eye grows back in the animation; keep the still as the model draws it and describe both eyes. "His open mouth is always a small plain soft-RED shape …
+  never a white line" removes tooth flashes; "both front legs hang straight down, never points" stops gestures; pigeon host in a scene: "both eyes blink together, NO wink, wings behind the desk".
+- EP.13: a SLOW line must be asked word by word ("How... was... your... holiday..."), otherwise it is as fast as the FAST line. Check words per second of both.
 
 **Two-take host line:** "says it TWICE: slowly, then a one-second pause, then at natural speed". Measured gaps
 between takes were 2.8–4.5 s and take 2 started anywhere from 5.9 to 7.0 s. Never assume where take 2 is; read

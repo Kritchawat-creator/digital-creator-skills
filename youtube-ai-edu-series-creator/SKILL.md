@@ -43,6 +43,11 @@ loudness. The fixed section order and label text are in `references/04-assembly-
 **Global channel (owner, 2026-11-21).** Burn **English only** into the video. Other languages go only into
 caption tracks (English uploaded + Thai) and title/description translations (TH, ES, PT, VI, ID).
 
+**Subtitles and translations on every episode (owner, 2026-11-23: "อย่าลืมใส่ subtitle translation").** No episode
+goes Public or Scheduled until the Subtitles page shows **English** (uploaded `.en.srt`) and **Thai** (`.th.srt`) both
+**Published**, cue count equal to the file, and the title/description translations **TH, ES, PT, VI, ID** all
+Published. This is a hard gate in `references/07-studio-upload.md` §4a, even when the owner says "publish now".
+
 | # | Phase | What to do | Gate before moving on | Details |
 | --- | --- | --- | --- | --- |
 | 0 | Orient | Read the series plan (*Pudding:* the season table, situation / phrases / grammar / cliffhanger per episode, is in Drive `pudding-ep1/docs/channel-plan.md` §5 — the next episode's topic and the cliffhanger come from there, not from memory), the cast bible and `Characters/README.md` (paste prompt blocks word for word), the previous episode's script (its "As-built" section), `qc_log.txt`, upload metadata and **its `build.py`**. Check which machine and which Meta AI account you are on (`10`). Create the episode folder; reuse fonts and scene masters. | You can state the episode's situation, key phrases, grammar point, mistake and cliffhanger, and which masters can be reused. | `01` |
@@ -55,11 +60,11 @@ caption tracks (English uploaded + Thai) and title/description translations (TH,
 | 7 | Assembly | Timeline as code: copy the previous episode's `build.py` (same look), replace the segments. Run `plan` (chapters, burned-text list, glyph check) and `sync_check.py windows`, then render, then check the delivered file: sync, loudness, whole-video contact sheet. | A/V offset 0 ms (±10) at every clip to the end, about −14 LUFS and at most −1 dBTP, no silent cards, burned text spell-checked, **0 non-English characters burned in**, contact sheet matches the previous episode. | `04` |
 | 8 | Thumbnail | Dedicated Meta AI art without text, then local text with asserts. Check it at 1280, 320 and 168 px wide. | No text touches a character or leaves its pill; nothing sits in the bottom-right timestamp area. | `05` |
 | 9 | Metadata | Write `docs/<series>-epN-upload-metadata.md`: title, description with chapters and links, tags, settings, translations, thumbnail brief. | Chapters come from `build.py plan`; tags are under 500 characters by Studio's counter. | `06` |
-| 10 | Upload | The owner drags the file into Studio. Fill details, thumbnail, audience, English subtitles, end screen, Private. Run the automatic-captions word check right after saving, before the slow steps. Then other subtitles, translations, playlist. | Every setting is read back on the edit page, including visibility and the thumbnail picture. The word check matches the burned subtitles. | `07` |
+| 10 | Upload | **Upload the file yourself** from the owner's Chrome (owner, 2026-11-24): open `/videos/upload?d=ud`, run `scripts/ep6_chrome_tools/studio_upload_video.py <tab> out/<episode>.mp4` (bytes into the page, SHA-256 check, inject into the dialog's file input). Don't ask for a drag and never wait for the owner: upload as soon as QC passes ("อัพโหลด คลิปลง youtube เองได้เลย ไม่ต้องรอฉัน"). Fill details, thumbnail, audience, English subtitles, end screen, Private. Run the automatic-captions word check right after saving, before the slow steps. Then other subtitles, translations, playlist. | Every setting is read back on the edit page, including visibility and the thumbnail picture. The word check matches the burned subtitles. | `07` |
 | 11 | Close out | Append "As-built" notes to the script, record the upload in the metadata doc, add new lessons to this skill. | Report sent with URL, duration, loudness, sync and open items. | `09` |
 
 The owner is asked only at fixed points: installs and downloads, new character designs, the first clip of each
-new voice, the listen check, the Studio file drag, audience and AI disclosure, anything Public, deleting an upload,
+new voice, the listen check, audience and AI disclosure, anything Public, deleting an upload,
 payments, and changes to an older episode.
 
 ## Project Context (Pudding Speaks English — project-specific values)
@@ -67,7 +72,7 @@ payments, and changes to an older episode.
 | Item | Value |
 | --- | --- |
 | Series | *Pudding Goes to London*, 12 episodes planned; beginner English (CEFR A1–A2) for teens and adults worldwide; not made for kids |
-| Cast | Pudding (baby elephant, yellow backpack, no eyelashes), Ploy (Thai teen, mint hoodie), Ollie (British teen, striped scarf), Biscuit (pigeon officer, orange beak, plain navy cap; lesson host), Frank (adult red fox, taxi driver, EP.4), Mabel (adult grey goose, hotel receptionist, EP.4–5; small lashes allowed), Lily (planned). Sheets in `Characters/` |
+| Cast | Pudding (baby elephant, yellow backpack, no eyelashes), Ploy (Thai teen, mint hoodie), Ollie (British teen, striped scarf), Biscuit (pigeon officer, orange beak, plain navy cap; lesson host), Frank (adult red fox, taxi driver, EP.4), Mabel (adult grey goose, hotel receptionist, EP.4–5; small lashes allowed), Lily (adult cream cat, owns the café, plain orange apron, no bow, NO lashes or brows; EP.7 — Ollie works there at weekends, no "aunt"). Sheets in `Characters/` |
 | Format | 1920×1080, 30 fps, about 5 min; clips from Meta AI web (10 s, 1280×720, 24 fps, native speech) |
 | Folders | Windows (EP.1–3): `E:\claude-work\pudding-ep1\` (venv, fonts, `docs\channel-plan.md`, cast bible), `…\pudding-ep2\`, `…\pudding-ep3\` (also on Drive "Learn English"). Mac (EP.4 on): `~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/` (`Characters/`, `docs/pudding-character-bible.md`, `pudding-ep4/`). |
 | Per-episode record | `docs\pudding-epN-script.md` and `docs\pudding-epN-upload-metadata.md` hold the video URL, playlist and settings. Read them for IDs; they are not repeated here. |
@@ -123,6 +128,13 @@ word check in phase 10 exist to catch those before the full Studio work.
 | `build_example_ep5_mac.py` | EP.5 = EP.4's build with the EP.5 timeline (three-clip recap, card background = the episode's own master); the latest template to copy |
 | `listen.py LIST OUT.mp4` · `zoomset.py OUT CROP NAME:START:END …` | Mac listen-check MP4 (labelled parts, −16 LUFS); stacked 5 fps face strips for several clips at once (EP.5) |
 | `meta_queue_ep5.js` | Meta AI page helpers (EP.5): paste a prompt into the Lexical box, attach a master by fetch or from localStorage, run a queue of clip prompts unattended and collect the clip URLs |
+| `ep6_chrome_tools/` | Driving the owner's own Chrome by AppleScript (EP.6–EP.7): `cjs.py` (JS in a tab), `inject.py` (master into meta.ai localStorage), `meta.py` + `runq.py` (clip queue), `translate_meta.py` (5 title/description translations), `push_file.py` + **`studio_upload_video.py` (the Studio video upload, no drag)** |
+| `ep6_chrome_tools/` (EP.8 additions) | `asr.sh NAME in out` (local whisper-cli word check), `runimg.py` (image prompts from `prompts/images.json`, saves to `masters/`), `wait_visible.sh` (wait for a visible, hydrated meta.ai tab + `caffeinate -d`); `meta.py` takes `key1+key2` to attach two images |
+| `ep6_chrome_tools/` (EP.9 additions) | `meta.py` rewritten (waits for a running reply, resends on service overload, reload every 4 min, `RESUME=1`), `runq.py` (8 tries), `cjs.py` (45 s timeout), `wait_visible.sh` (checks the lock before touching Chrome), `qcset.py` (ASR + sheet + strip for several clips at once) |
+| `ep6_chrome_tools/` (EP.13 additions) | `q.sh NAME…` (whisper + speech runs + pitch in one go), `zf.py NAME a b crop [n]` (big frames of the used window), `sheet.py`, `es_open.py` (re-open the end screen of an uploaded video to read or fix the times) |
+| `ep6_chrome_tools/` (EP.12 additions) | `eyez.py` (8-frame eye / mouth strip), `env.py` (speech runs and gaps), `meta.py` (md5 check for images too, "Something went wrong" = service fault) |
+| `ep6_chrome_tools/` (EP.11 additions) | `meta.py` (md5 check so an old clip under a new URL is never taken as new; a lost reply is resent after two dead reloads), `runimg.py` (accepts Meta's own "make it again" offer), `asr_window.sh` (whisper per window), `pitch_check.py` (`clip in out` lines on stdin → median pitch, to compare a voice with earlier episodes) |
+| `ep6_chrome_tools/` (EP.10 additions) | `studio_steps_ep10.txt` (the complete Studio pass as commands), `st.py` + `es.py` (Studio helpers), `meta.py` (reload 90 s, limit 660 s), `runimg.py` (8 tries on overload), `qcset.py` (several windows of one clip) |
 
 Set `PY` to the venv's Python before running the shell scripts
 (`export PY=/e/claude-work/pudding-ep1/.venv/Scripts/python.exe`). They run from the episode folder and expect
@@ -235,6 +247,14 @@ card(3.0, badge=("Answer", GREEN), lines=[L("How much is it?", GREEN, 92)], icon
 | The owner says "keep consistent" | Compare frames with the previous episode side by side; port its code instead of matching by eye |
 | A listener's mouth moves during a short exclamation ("Oh no!") in a two-shot | Twice in EP.5, even with "mouth stays shut": drop the exclamation and keep the clean sentence (or give it to an adult-alone/solo shot) |
 | A teen with a wet umbrella in the master | Meta adds rain drips running down his face (reads as tears): add "his hair and face are DRY, only the umbrella is wet" to every prompt |
+| A location where the hero, a teen and an adult all speak (EP.7 café) | Three masters: teen + hero two-shot for the teen's lines, a hero-only close shot for the hero's lines, an adult-alone shot for the adult's lines (0 listener faults in EP.7) |
+| A new adult-alone master in a place that already has a master (EP.8 Walter at the canal) | Attach the place master AND the character sheet in the same prompt (`meta.py key1+key2`); one alone drifts the design, the other drifts the place. If the adult is small in frame, crop every clip of them (`768:432:300:280`) |
+| The owner asked for no check-ins, so nobody listens | Word-check every accepted window locally with `whisper-cli` (`~/.cache/whisper/ggml-small.bin`, already on the Mac): `tools/asr.sh NAME in out`; the automatic-captions check after upload still decides |
+| A lesson about feelings (bored, tired, excited): the model acts the feeling (EP.11) | Host prompt: "only TEACHES these words: he does not act the feeling … same calm, cheerful teacher face, eyes big, round and fully open". Hero: "calm, friendly, cheerful face", NO yawn, NO worried look. Never name the feeling as an acting note |
+| Everybody the hero talks to should meet his eyes | Put the hero LEFT facing right, the teen RIGHT and adults RIGHT, so every reverse shot looks back at him (EP.11) |
+| Clip windows and card times | 0.1 s grid only (3 frames at 30 fps); assert `dur*30` is whole, then check 30/1 and duration = plan on the delivered file (EP.12) |
+| A recurring voice sounds different | Measure it: `pitch_check.py` on the new clips and on the earlier episode's; retake with a plain voice description ("light, bright, youthful teenage-boy voice, not deep") |
+| Screen locked or the meta.ai tab hidden at the start | Do script, prompts, `build.py plan`, metadata and thumbnail words offline; start `tools/wait_visible.sh` + the image queue in the background; ask the owner once to unlock (EP.8) |
 
 ## Common Pitfalls
 

@@ -1,0 +1,366 @@
+# EP.10 Studio pass, the exact commands in order (2026-11-25, all worked first try). Replace the episode number, video ids,
+# previous-episode id, calendar day and end-card start (es.py '5:00:03'). Run from the episode folder; T in st.py = the Studio tab id.
+
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10; osascript -e 'tell application "Google Chrome" to set active tab index of window id 645343510 to 5'; python3 tools/cjs.py 645346567 -e "location.href='https://studio.youtube.com/channel/UCfAQFnZ6_mT9DYep-iDCzvw/videos/upload?d=ud';1"; sleep 15; python3 tools/cjs.py 645346567 -e "document.hidden+' '+location.href+' '+document.querySelectorAll('ytcp-uploads-dialog input[type=file], ytcp-uploads-file-picker input[type=file]').length"
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10; python3 tools/studio_upload_video.py 645346567 out/pudding_ep10.mp4 2>&1 | tail -6; sleep 20; python3 tools/cjs.py 645346567 -e "(document.querySelector('ytcp-video-upload-progress')||{textContent:''}).textContent.replace(/\s+/g,' ').trim()"
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+echo "UPLOAD $(date '+%F %T') out/pudding_ep10.mp4 (render 2) injected (tools/studio_upload_video.py, 81,199,984 B, SHA OK, 73 s). Video ID m2xH3NyNX88 (https://youtu.be/m2xH3NyNX88), upload complete." >> qc_log.txt
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("(document.querySelector('#reuse-details-button')||{click(){}}).click();1"); time.sleep(5)
+print(J("""[...document.querySelectorAll('ytcp-entity-card')].filter(c=>c.offsetParent).map(c=>(c.outerHTML.match(/vi(?:_webp)?\\/([\\w-]{11})/)||[])[1]+' '+c.textContent.replace(/\\s+/g,' ').trim().slice(0,60)).slice(0,5).join(' || ')"""))
+print(J("""(()=>{const c=[...document.querySelectorAll('ytcp-entity-card')].filter(c=>c.outerHTML.includes('-oOQlPMQL50')&&c.offsetParent);c[c.length-1].click();return c.length})()""")); time.sleep(2)
+print(J("""(()=>{const b=[...document.querySelectorAll('#select-button')].filter(b=>b.offsetParent);return b.map(b=>b.textContent.trim()+' '+b.hasAttribute('disabled')).join('|')})()"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+print(J("""(()=>{const b=[...document.querySelectorAll('#select-button')].filter(b=>b.offsetParent&&b.textContent.trim()==='Reuse')[0];b.click();return 1})()""")); time.sleep(6)
+for i,v in enumerate((M['title'],M['desc'])):
+    print(J("""(()=>{const t=[...document.querySelectorAll('ytcp-uploads-dialog #textbox[contenteditable]')][%d];t.focus();document.execCommand('selectAll');document.execCommand('insertText',false,%s);return t.textContent.length})()"""%(i,json.dumps(v)))); time.sleep(1.5)
+d=json.loads(J("""JSON.stringify([...document.querySelectorAll('ytcp-uploads-dialog #textbox[contenteditable]')].map(x=>x.innerText))"""))
+print(d[0]==M['title'], d[1].strip()==M['desc'].strip(), len(d[1]))
+print(J("""(()=>{const b=document.querySelector('#toggle-button');b&&b.click();return b?b.textContent.trim():''})()""")); time.sleep(3)
+for n in ('VIDEO_MADE_FOR_KIDS_NOT_MFK','VIDEO_HAS_ALTERED_CONTENT_NO'):
+    J("(()=>{const r=document.querySelector('tp-yt-paper-radio-button[name=\"%s\"]');r.scrollIntoView({block:'center'});r.click();return 1})()"%n); time.sleep(1)
+print(J("""(()=>['VIDEO_MADE_FOR_KIDS_NOT_MFK','VIDEO_HAS_ALTERED_CONTENT_NO'].map(n=>{const r=document.querySelector('tp-yt-paper-radio-button[name="'+n+'"]');return n+' '+(r?r.getAttribute('aria-checked'):'none')}).join(' | '))()"""))
+print(J("""(()=>{const tag=document.querySelector('#tags-container');const cl=tag.querySelector('#clear-button');if(cl)cl.click();return cl?'cleared':'noclear'})()""")); time.sleep(1.5)
+print(J("""(()=>{const inp=document.querySelector('#tags-container input#text-input, ytcp-uploads-dialog ytcp-chip-bar input');inp.focus();document.execCommand('insertText',false,%s);inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:13,which:13,bubbles:true}));return inp.value.length})()"""%json.dumps(M['tags']+','))); time.sleep(2)
+print(J("""(()=>{const c=document.querySelector('#tags-container');return c?c.querySelectorAll('ytcp-chip').length+' '+c.textContent.replace(/\\s+/g,' ').slice(-200):'none'})()"""))
+print(J("""(()=>{const g=q=>[...document.querySelectorAll(q)].map(e=>e.textContent.replace(/\\s+/g,' ').trim().slice(0,120)).join('|');return 'CAT '+g('ytcp-uploads-dialog #category')+' LANG '+g('ytcp-uploads-dialog #language-input')+' PL '+g('ytcp-uploads-dialog ytcp-video-metadata-playlists')})()"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("(()=>{document.querySelector('ytcp-uploads-dialog #next-button').click();return 1})()"); time.sleep(4)
+srt=open('out/pudding_ep10.en.srt').read()
+J("window.__srtEN=%s;1"%json.dumps(srt)); print(J("window.__srtEN.length+''"), len(srt))
+print(J("(()=>{const b=document.querySelector('#subtitles-button');b.click();return b?1:0})()")); time.sleep(6)
+J(PATCH)
+print(J("""(()=>{const e=[...document.querySelectorAll('*')].filter(b=>b.offsetParent&&b.textContent.trim()==='Upload file'&&b.children.length===0).pop();e.click();return e.tagName+' '+(e.closest('[id]')||{}).id})()""")); time.sleep(3)
+print(J("""[...document.querySelectorAll('input[type=file]')].map(i=>i.id).join(' | ')"""))
+print(J("""(()=>{const inp=document.querySelector('input#captions-file-loader')||document.querySelector('#captions-file-loader input');const f=new File([window.__srtEN],'pudding_ep10.en.srt',{type:'application/x-subrip'});const dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;inp.dispatchEvent(new Event('change',{bubbles:true}));return inp.tagName+inp.files.length})()""")); time.sleep(5)
+print(J("""(()=>{return document.querySelectorAll('ytve-captions-marker-container').length+' '+[...document.querySelectorAll('textarea')].filter(t=>t.offsetParent).slice(0,3).map(t=>t.value).join(' / ')})()"""))
+print(J("""(()=>{const d=[...document.querySelectorAll('tp-yt-paper-dialog,ytcp-dialog')].filter(d=>d.offsetParent&&d.textContent.includes('Select subtitles file type'))[0];if(!d)return 'nopicker';const b=d.querySelector('#cancel-button');b.click();return b.tagName+b.id})()""")); time.sleep(2)
+print(J("""(()=>{const b=document.querySelector('#publish-button');const n=document.querySelectorAll('ytve-captions-marker-container').length;b.click();return n+' '+b.textContent.trim()})()""")); time.sleep(6)
+print(J("""[...document.querySelectorAll('#subtitles-button, #endscreens-button')].map(b=>b.textContent.trim()).join('|')"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("(()=>{document.querySelector('#endscreens-button').click();return 1})()"); time.sleep(8)
+print(J("""(()=>{const c=[...document.querySelectorAll('.card')].filter(d=>d.offsetParent&&d.textContent.trim()==='1 video, 1 subscribe')[0];const r=c.getBoundingClientRect();const o={bubbles:true,cancelable:true,composed:true,clientX:r.x+r.width/2,clientY:r.y+r.height/2,pointerId:1,view:window};c.dispatchEvent(new PointerEvent('pointerdown',o));c.dispatchEvent(new MouseEvent('mousedown',o));c.dispatchEvent(new PointerEvent('pointerup',o));c.dispatchEvent(new MouseEvent('mouseup',o));c.dispatchEvent(new MouseEvent('click',o));return 1})()""")); time.sleep(4)
+P="""(()=>{const ed=document.querySelector('ytve-editor');const p=ed.querySelector('ytve-endscreen-editor-options-panel');return p?p.textContent.replace(/\\s+/g,' ').slice(0,300)+' IN '+[...p.querySelectorAll('ytve-framestamp-input input')].map(i=>i.value).join(','):'nopanel'})()"""
+for k in (0,1):
+    J("""(()=>{const ed=document.querySelector('ytve-editor');const it=[...ed.querySelectorAll('ytve-endscreen-editor-preview-overlay-item')].filter(i=>i.offsetWidth>20)[%d];['mousedown','mouseup','click'].forEach(t=>it.dispatchEvent(new MouseEvent(t,{bubbles:true})));return 1})()"""%k); time.sleep(1.5)
+    t=J(P); print(k,t[:160], t[-40:])
+    if 'Choose specific' in t:
+        print(J("""(()=>{const r=[...document.querySelectorAll('tp-yt-paper-radio-button')].filter(r=>r.offsetParent&&/Choose specific video/.test(r.textContent))[0];r.click();return r.textContent.trim()})()""")); time.sleep(5)
+        print(J("""[...document.querySelectorAll('ytcp-video-pick-dialog ytcp-entity-card')].map(c=>(c.outerHTML.match(/vi(?:_webp)?\\/([\\w-]{11})/)||[])[1]+' '+c.textContent.replace(/\\s+/g,' ').trim().slice(0,50)).slice(0,6).join(' || ')"""))
+        print(J("""(()=>{const c=[...document.querySelectorAll('ytcp-video-pick-dialog ytcp-entity-card')].filter(c=>c.outerHTML.includes('-oOQlPMQL50'));c[0].click();return c.length})()""")); time.sleep(4)
+        print(J(P)[-160:])
+        break
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+cat > build/es.py <<'E'
+exec(open('build/st.py').read())
+SEL="""(()=>{const ed=document.querySelector('ytve-editor');const it=[...ed.querySelectorAll('ytve-endscreen-editor-preview-overlay-item')].filter(i=>i.offsetWidth>20)[%d];['mousedown','mouseup','click'].forEach(t=>it.dispatchEvent(new MouseEvent(t,{bubbles:true})));return 1})()"""
+SET="""(()=>{const ed=document.querySelector('ytve-editor');const p=ed.querySelector('ytve-endscreen-editor-options-panel');const inp=p.querySelectorAll('ytve-framestamp-input input')[0];
+inp.focus();inp.select();document.execCommand('insertText',false,'5:00:03');
+['keydown','keyup'].forEach(t=>inp.dispatchEvent(new KeyboardEvent(t,{key:'Enter',code:'Enter',keyCode:13,which:13,bubbles:true})));
+['keydown','keyup'].forEach(t=>inp.dispatchEvent(new KeyboardEvent(t,{key:'Tab',code:'Tab',keyCode:9,which:9,bubbles:true})));
+inp.dispatchEvent(new Event('change',{bubbles:true}));inp.blur();inp.dispatchEvent(new FocusEvent('focusout',{bubbles:true}));return inp.value})()"""
+GET="""(()=>{const ed=document.querySelector('ytve-editor');const p=ed.querySelector('ytve-endscreen-editor-options-panel');return p.textContent.replace(/\\s+/g,' ').slice(0,25)+' ... '+p.textContent.replace(/\\s+/g,' ').slice(-60)+' '+[...p.querySelectorAll('ytve-framestamp-input input')].map(i=>i.value).join(' - ')})()"""
+for rnd in range(2):
+    for k in (1,0):
+        J(SEL%k); time.sleep(1.2); print('set',k,J(SET)); time.sleep(1.2)
+for k in (0,1):
+    J(SEL%k); time.sleep(1.5); print(k,J(GET))
+E
+python3 build/es.py
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("(()=>{[...document.querySelectorAll('ytve-editor #save-button, #save-button')].filter(b=>b.offsetParent)[0].click();return 1})()"); time.sleep(7)
+print(J("""[...document.querySelectorAll('#subtitles-button, #endscreens-button')].map(b=>b.textContent.trim()).join('|')"""))
+J("document.querySelector('#step-badge-3').click();1"); time.sleep(5)
+print(J("""[...document.querySelectorAll('tp-yt-paper-radio-button')].filter(r=>r.offsetParent).map(r=>r.getAttribute('name')+' '+r.getAttribute('aria-checked')).join(' | ')"""))
+J("document.querySelector('tp-yt-paper-radio-button[name=\"PRIVATE\"]').click();1"); time.sleep(2)
+print(J("""[...document.querySelectorAll('tp-yt-paper-radio-button')].filter(r=>r.offsetParent).map(r=>r.getAttribute('name')+' '+r.getAttribute('aria-checked')).join(' | ')+' '+document.querySelector('#done-button').textContent.trim()"""))
+J("document.querySelector('#done-button').click();1"); time.sleep(9)
+print(J("""[...document.querySelectorAll('tp-yt-paper-dialog,ytcp-dialog')].filter(d=>d.offsetParent).map(d=>d.textContent.replace(/\\s+/g,' ').trim().slice(0,150)).join(' || ')"""))
+J("location.href='https://studio.youtube.com/video/m2xH3NyNX88/edit';1"); time.sleep(15)
+print(J("""location.href+' '+[...document.querySelectorAll('ytcp-video-metadata-visibility')].map(e=>e.textContent.replace(/\\s+/g,' ').trim()).join('|')+' '+[...document.querySelectorAll('#textbox[contenteditable]')].map(x=>x.innerText.slice(0,80)+'~'+x.innerText.length).join(' || ')"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+echo "STUDIO m2xH3NyNX88 upload dialog: Reuse details (EP.9, card chosen by id) -> title + description (1,686 chars, 11 chapters, EP.9 link -oOQlPMQL50) + 20 tags (454/500); not made for kids; altered content No; Education; English; playlist Season 1; EN SRT injected (106 markers = file) -> Done; end screen '1 video, 1 subscribe' = EP.9 -oOQlPMQL50 + Subscribe, both 5:00:03-5:16:03; saved Private." >> qc_log.txt
+python3 tools/push_file.py 645346567 out/pudding_ep10_thumbnail.jpg | tail -1
+python3 - <<'E'
+exec(open('build/st.py').read())
+print(J("""(()=>{const i=document.querySelector('ytcp-video-thumbnail-editor #file-loader')||document.querySelector('#file-loader');if(!i)return 'none';const f=new File(window.__fileParts,'pudding_ep10_thumbnail.jpg',{type:'image/jpeg'});const dt=new DataTransfer();dt.items.add(f);i.files=dt.files;i.dispatchEvent(new Event('change',{bubbles:true}));window.__fileParts=null;return f.size})()""")); time.sleep(6)
+print(J("""[...document.querySelectorAll('ytcp-video-thumbnail-editor img')].map(i=>i.src.slice(0,60)+' '+i.naturalWidth).join(' | ')+' save '+document.querySelector('ytcp-button#save').hasAttribute('disabled')"""))
+J("document.querySelector('ytcp-button#save').click();1"); time.sleep(9)
+J("location.reload();1"); time.sleep(15)
+print(J("""[...document.querySelectorAll('ytcp-video-thumbnail-editor img')].map(i=>i.src.slice(0,110)+' '+i.naturalWidth).join(' | ')"""))
+E
+U=$(python3 tools/cjs.py 645346567 -e "[...document.querySelectorAll('ytcp-video-thumbnail-editor img')][0].src"); curl -s -o build/readback_thumb.webp "$U" && python3 -c "
+from PIL import Image
+im=Image.open('build/readback_thumb.webp');print(im.size);im.convert('RGB').save('build/readback_thumb.png')"
+osascript -e 'tell application "Google Chrome" to set URL of tab id 645346567 of window id 645343510 to "https://studio.youtube.com/video/m2xH3NyNX88/translations"'; sleep 14
+python3 tools/cjs.py 645346567 -e "document.hidden+' '+[...document.querySelectorAll('ytgn-video-translation-row')].map(r=>r.textContent.replace(/\s+/g,' ').trim().slice(0,160)).join(' || ')"
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+ls -t ~/Downloads | head -1
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("""(()=>{const r=[...document.querySelectorAll('ytgn-video-translation-row')].find(r=>/automatic captions/.test(r.textContent));[...r.querySelectorAll('td,ytgn-video-translation-hover-cell,#cell-container')].concat([r]).forEach(c=>['pointerover','pointerenter','mouseover','mouseenter','mousemove'].forEach(t=>c.dispatchEvent(new MouseEvent(t,{bubbles:true}))));return 1})()"""); time.sleep(2)
+print(J("""(()=>{const r=[...document.querySelectorAll('ytgn-video-translation-row')].find(r=>/automatic captions/.test(r.textContent));const b=r.querySelector('#captions-more-options');if(!b)return 'nomore '+[...r.querySelectorAll('[id]')].map(e=>e.id).join(',');b.click();return 'opened'})()""")); time.sleep(2)
+print(J("""[...document.querySelectorAll('tp-yt-paper-item')].filter(i=>i.offsetParent).map(i=>i.textContent.trim()).join('|')"""))
+J("(()=>{const i=[...document.querySelectorAll('tp-yt-paper-item')].filter(i=>i.offsetParent&&i.textContent.trim()==='Download')[0];i.click();return 1})()"); time.sleep(2)
+print(J("""[...document.querySelectorAll('tp-yt-paper-item')].filter(i=>i.offsetParent).map(i=>i.textContent.trim()).join('|')"""))
+print(J("(()=>{const i=[...document.querySelectorAll('tp-yt-paper-item')].filter(i=>i.offsetParent&&i.textContent.trim()==='.srt')[0];if(!i)return 'no';i.click();return 'clicked'})()")); time.sleep(7)
+E
+ls -t ~/Downloads | head -1; F=$(ls -t ~/Downloads/captions*.srt | head -1); ls -la "$F"; cp "$F" build/auto_captions_ep10.srt; grep -vE '^[0-9]+$|-->|^$' build/auto_captions_ep10.srt | tr '\n' ' ' | fold -s -w 160
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+echo "WORDCHECK 2026-11-25 00:51 automatic captions (pre-approved download; ~/Downloads/captions (6).srt -> build/auto_captions_ep10.srt): every spoken line matches the burned subtitles, incl. the intentional 'This one is more bigger' x3 and 'I'm boring' x2 + H6; one stray 'Hey,' over the end-card music (ASR noise, nothing is spoken there). Automatic track only downloaded. PASS." >> qc_log.txt
+python3 tools/translate_meta.py TH ES PT VI ID 2>&1 | cut -c1-200
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("location.reload();1"); time.sleep(14)
+print(J("JSON.stringify([...document.querySelectorAll('ytgn-video-translation-row')].map(r=>r.textContent.replace(/\\s+/g,' ').trim().slice(0,90)))"))
+J("window.__srtTH=%s;1"%json.dumps(open('out/pudding_ep10.th.srt',encoding='utf-8').read())); print(J("window.__srtTH.length+''"))
+J(PATCH)
+ROW="[...document.querySelectorAll('ytgn-video-translation-row')].find(r=>r.textContent.trim().startsWith('Thai'))"
+J("""(()=>{const r=%s;[...r.querySelectorAll('td,ytgn-video-translation-hover-cell,#cell-container')].forEach(c=>['pointerover','pointerenter','mouseover','mouseenter','mousemove'].forEach(t=>c.dispatchEvent(new MouseEvent(t,{bubbles:true}))));const c=r.querySelector('ytgn-video-translation-hover-cell');c.click();c.querySelector('#cell-container').click();return 1})()"""%ROW); time.sleep(2)
+print(J("""(()=>{const r=%s;const b=r.querySelector('#captions-add');if(!b)return 'noadd '+[...r.querySelectorAll('[id]')].map(e=>e.id).join(',');b.click();return 'add'})()"""%ROW)); time.sleep(5)
+print(J("""(()=>{const e=[...document.querySelectorAll('*')].filter(b=>b.offsetParent&&b.textContent.trim()==='Upload file'&&b.children.length===0)[0];if(!e)return 'none';e.click();return e.tagName})()""")); time.sleep(3)
+print(J("""(()=>{const f=new File([window.__srtTH],'pudding_ep10.th.srt',{type:'application/x-subrip'});const dt=new DataTransfer();dt.items.add(f);const t=[...document.querySelectorAll('input#captions-file-loader')].pop();t.files=dt.files;t.dispatchEvent(new Event('change',{bubbles:true}));return 1})()""")); time.sleep(6)
+print(J("""(()=>{return document.querySelectorAll('ytve-captions-marker-container').length+' '+[...document.querySelectorAll('textarea')].filter(t=>t.offsetParent&&/[ก-๙]/.test(t.value)).slice(0,2).map(t=>t.value).join(' / ')})()"""))
+print(J("""(()=>{const d=[...document.querySelectorAll('tp-yt-paper-dialog,ytcp-dialog')].filter(d=>d.offsetParent&&d.textContent.includes('Select subtitles file type'))[0];if(!d)return 'nopicker';const b=d.querySelector('#cancel-button');b.click();return 'cancel'})()""")); time.sleep(2)
+print(J("""(()=>{const b=document.querySelector('#publish-button');return b.textContent.trim()+b.hasAttribute('disabled')+' '+(document.querySelector('ytve-captions-editor')||document.body).textContent.replace(/\\s+/g,' ').match(/Thai.{0,30}/)})()"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("document.querySelector('#publish-button').click();1"); time.sleep(9)
+def count(lang):
+    J("location.reload();1"); time.sleep(14)
+    ROW="[...document.querySelectorAll('ytgn-video-translation-row')].find(r=>%s.test(r.textContent.trim()))"%lang
+    J("""(()=>{const r=%s;[...r.querySelectorAll('td,ytgn-video-translation-hover-cell,#cell-container')].forEach(c=>['pointerover','pointerenter','mouseover','mouseenter','mousemove'].forEach(t=>c.dispatchEvent(new MouseEvent(t,{bubbles:true}))));const c=r.querySelector('ytgn-video-translation-hover-cell');c.click();const k=c.querySelector('#cell-container');k&&k.click();return 1})()"""%ROW); time.sleep(2.5)
+    print(lang, J("""(()=>{const r=%s;const b=r.querySelector('#captions-edit');if(!b)return 'noedit';b.click();return r.textContent.replace(/\\s+/g,' ').trim().slice(0,60)})()"""%ROW)); time.sleep(8)
+    print(J("""(()=>{return document.querySelectorAll('ytve-captions-marker-container').length+' first: '+[...document.querySelectorAll('textarea')].filter(t=>t.offsetParent&&t.value).slice(0,1).map(t=>t.value).join('')+' | '+[...document.querySelectorAll('tp-yt-paper-dialog,ytcp-dialog')].filter(d=>d.offsetParent).map(d=>d.textContent.replace(/\\s+/g,' ').trim().slice(0,60)).join('||')})()"""))
+    print(J("""(()=>{const b=[...document.querySelectorAll('#close-button')].filter(b=>b.offsetParent).pop();if(b){b.click();return 'closed'}return 'noclose'})()""")); time.sleep(2)
+count('/^Thai/'); count('/^English \\(video/')
+J("location.reload();1"); time.sleep(14)
+print(J("JSON.stringify([...document.querySelectorAll('ytgn-video-translation-row')].map(r=>r.textContent.replace(/\\s+/g,' ').trim().slice(0,90)))"))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+echo "GATE English (video language) 106 = file, first 'This one is more bigger!', Published; Thai 106 = file, first 'อันนี้ใหญ่กว่า! (ผิด: ใช้ more กับ bigger)', Published (both re-opened and counted after publish, closed without edits); TH/ES/PT/VI/ID title+description Published Nov 25 (after reload); automatic captions only downloaded. Thumbnail: after reload the mqdefault picture is EP.10's (build/readback_thumb.png). Gate closed." >> qc_log.txt
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("location.href='https://studio.youtube.com/video/m2xH3NyNX88/edit';1"); time.sleep(15)
+J("""(()=>{const b=document.querySelector('ytcp-video-metadata-visibility #select-button');const o={bubbles:true,composed:true};['mousedown','mouseup','click'].forEach(t=>b.dispatchEvent(new MouseEvent(t,o)));return 1})()"""); time.sleep(3)
+J("(()=>{const b=document.querySelector('#second-container-expand-button');b.click();return b?1:0})()"); time.sleep(3)
+print(J("(()=>{const b=document.querySelector('#datepicker-trigger');b.click();return b.textContent.replace(/\\s+/g,' ').trim()})()")); time.sleep(3)
+print(J("""(()=>{const m=[...document.querySelectorAll('.calendar-month')].find(m=>m.textContent.includes('Nov 2026'));const d=[...m.querySelectorAll('.calendar-day')].find(d=>d.textContent.trim()==='27');d.click();return d.className})()""")); time.sleep(2)
+print(J("document.querySelector('#datepicker-trigger').textContent.replace(/\\s+/g,' ').trim()"))
+print(J("""(()=>{const i=[...document.querySelectorAll('ytcp-datetime-picker input')].filter(i=>i.offsetParent).pop();i.focus();i.click();['mousedown','mouseup','click'].forEach(t=>i.dispatchEvent(new MouseEvent(t,{bubbles:true,composed:true})));return i.value})()""")); time.sleep(2)
+print(J("""(()=>{const n=s=>s.replace(/[\\s\\u202f\\u00a0]+/g,' ').trim();const it=[...document.querySelectorAll('ytcp-time-of-day-picker tp-yt-paper-item, tp-yt-paper-item')].filter(e=>n(e.textContent)==='8:00 AM');if(!it.length)return 'none '+document.querySelectorAll('ytcp-time-of-day-picker').length;it[0].scrollIntoView({block:'center'});it[0].click();return it.length+' '+n(it[0].textContent)})()""")); time.sleep(2)
+print(J("""(()=>{const n=s=>s.replace(/[\\s\\u202f\\u00a0]+/g,' ').trim();const p=document.querySelector('ytcp-datetime-picker');return n(p.textContent).slice(-160)+' INPUT '+[...p.querySelectorAll('input')].map(i=>n(i.value)).join('|')+' DATE '+document.querySelector('#datepicker-trigger').textContent.trim()+' RADIO '+[...document.querySelectorAll('tp-yt-paper-radio-button')].filter(r=>r.offsetParent&&/PUBLIC|PRIVATE|UNLISTED|SCHEDULE/.test(r.getAttribute('name')||'')).map(r=>r.getAttribute('name')+r.getAttribute('aria-checked')).join(',')})()"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+echo "GATE English (video language) 106 = file, first 'This one is more bigger!', Published; Thai 106 = file, first 'อันนี้ใหญ่กว่า! (ผิด: ใช้ more กับ bigger)', Published (both re-opened and counted after publish, closed without edits); TH/ES/PT/VI/ID title+description Published Nov 25 (after reload); automatic captions only downloaded. Thumbnail: after reload the mqdefault picture is EP.10's (build/readback_thumb.png). Gate closed." >> qc_log.txt
+python3 - <<'E'
+exec(open('build/st.py').read())
+J("location.href='https://studio.youtube.com/video/m2xH3NyNX88/edit';1"); time.sleep(15)
+J("""(()=>{const b=document.querySelector('ytcp-video-metadata-visibility #select-button');const o={bubbles:true,composed:true};['mousedown','mouseup','click'].forEach(t=>b.dispatchEvent(new MouseEvent(t,o)));return 1})()"""); time.sleep(3)
+J("(()=>{const b=document.querySelector('#second-container-expand-button');b.click();return b?1:0})()"); time.sleep(3)
+print(J("(()=>{const b=document.querySelector('#datepicker-trigger');b.click();return b.textContent.replace(/\\s+/g,' ').trim()})()")); time.sleep(3)
+print(J("""(()=>{const m=[...document.querySelectorAll('.calendar-month')].find(m=>m.textContent.includes('Nov 2026'));const d=[...m.querySelectorAll('.calendar-day')].find(d=>d.textContent.trim()==='27');d.click();return d.className})()""")); time.sleep(2)
+print(J("document.querySelector('#datepicker-trigger').textContent.replace(/\\s+/g,' ').trim()"))
+print(J("""(()=>{const i=[...document.querySelectorAll('ytcp-datetime-picker input')].filter(i=>i.offsetParent).pop();i.focus();i.click();['mousedown','mouseup','click'].forEach(t=>i.dispatchEvent(new MouseEvent(t,{bubbles:true,composed:true})));return i.value})()""")); time.sleep(2)
+print(J("""(()=>{const n=s=>s.replace(/[\\s\\u202f\\u00a0]+/g,' ').trim();const it=[...document.querySelectorAll('ytcp-time-of-day-picker tp-yt-paper-item, tp-yt-paper-item')].filter(e=>n(e.textContent)==='8:00 AM');if(!it.length)return 'none '+document.querySelectorAll('ytcp-time-of-day-picker').length;it[0].scrollIntoView({block:'center'});it[0].click();return it.length+' '+n(it[0].textContent)})()""")); time.sleep(2)
+print(J("""(()=>{const n=s=>s.replace(/[\\s\\u202f\\u00a0]+/g,' ').trim();const p=document.querySelector('ytcp-datetime-picker');return n(p.textContent).slice(-160)+' INPUT '+[...p.querySelectorAll('input')].map(i=>n(i.value)).join('|')+' DATE '+document.querySelector('#datepicker-trigger').textContent.trim()+' RADIO '+[...document.querySelectorAll('tp-yt-paper-radio-button')].filter(r=>r.offsetParent&&/PUBLIC|PRIVATE|UNLISTED|SCHEDULE/.test(r.getAttribute('name')||'')).map(r=>r.getAttribute('name')+r.getAttribute('aria-checked')).join(',')})()"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+N="(s=>s.replace(/[\\s\\u202f\\u00a0]+/g,' ').trim())"
+print(J("""(()=>{const b=[...document.querySelectorAll('ytcp-video-visibility-edit-popup #save-button, ytcp-video-visibility-select #save-button, #save-button, ytcp-button')].filter(b=>b.offsetParent&&b.textContent.trim()==='Done')[0];b.click();return b.id})()""")); time.sleep(3)
+print(J("document.querySelector('ytcp-video-metadata-visibility').textContent.replace(/\\s+/g,' ')"))
+J("document.querySelector('ytcp-button#save').click();1"); time.sleep(9)
+J("location.reload();1"); time.sleep(16)
+print(J("document.querySelector('ytcp-video-metadata-visibility').textContent.replace(/\\s+/g,' ')"))
+J("""(()=>{const b=document.querySelector('ytcp-video-metadata-visibility #select-button');['mousedown','mouseup','click'].forEach(t=>b.dispatchEvent(new MouseEvent(t,{bubbles:true,composed:true})));return 1})()"""); time.sleep(3)
+print(J("""(()=>{const n=%s;const p=document.querySelector('ytcp-datetime-picker');return 'INPUT '+[...p.querySelectorAll('input')].map(i=>n(i.value)).join('|')+' DATE '+document.querySelector('#datepicker-trigger').textContent.trim()+' '+n(p.textContent).slice(0,200)})()"""%N))
+J("location.reload();1"); time.sleep(15)
+J("(()=>{const b=document.querySelector('#toggle-button');b&&b.click();return 1})()"); time.sleep(3)
+d=json.loads(J("""JSON.stringify({t:[...document.querySelectorAll('#textbox[contenteditable]')].map(x=>x.innerText),
+mfk:document.querySelector('tp-yt-paper-radio-button[name="VIDEO_MADE_FOR_KIDS_NOT_MFK"]').getAttribute('aria-checked'),
+alt:(document.querySelector('tp-yt-paper-radio-button[name="VIDEO_HAS_ALTERED_CONTENT_NO"]')||{getAttribute(){return 'n/a'}}).getAttribute('aria-checked'),
+tags:(document.querySelector('#tags-container')||{textContent:''}).textContent.replace(/\\s+/g,' ').slice(-40),
+ntags:document.querySelectorAll('#tags-container ytcp-chip').length,
+pl:[...document.querySelectorAll('ytcp-video-metadata-playlists')].map(e=>e.textContent.replace(/\\s+/g,' ').trim()).join('|').slice(0,80),
+cat:(document.querySelector('#category')||{textContent:''}).textContent.replace(/\\s+/g,' ').trim().slice(0,40),
+lang:(document.querySelector('#language-input')||{textContent:''}).textContent.replace(/\\s+/g,' ').trim().slice(0,40),
+vis:document.querySelector('ytcp-video-metadata-visibility').textContent.replace(/\\s+/g,' ').trim(),
+img:[...document.querySelectorAll('ytcp-video-thumbnail-editor img')].map(i=>i.src.slice(0,70)+' '+i.naturalWidth).join('|')})"""))
+print(d['t'][0]==M['title'], d['t'][1].strip()==M['desc'].strip(), len(d['t'][1]))
+for k in ('mfk','alt','tags','ntags','pl','cat','lang','vis','img'): print(k,':',d[k])
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+python3 - <<'E'
+exec(open('build/st.py').read())
+print(J("""(()=>{const e=[...document.querySelectorAll('ytcp-text-dropdown-trigger')].find(x=>/End screen/.test(x.textContent));if(!e)return 'none';e.scrollIntoView({block:'center'});const b=e.querySelector('ytcp-dropdown-trigger, [role=button], .container')||e;['mousedown','mouseup','click'].forEach(t=>b.dispatchEvent(new MouseEvent(t,{bubbles:true,composed:true})));return e.textContent.replace(/\\s+/g,' ').trim()})()""")); time.sleep(9)
+for k in (0,1):
+    J("""(()=>{const ed=document.querySelector('ytve-editor');const it=[...ed.querySelectorAll('ytve-endscreen-editor-preview-overlay-item')].filter(i=>i.offsetWidth>20)[%d];it&&['mousedown','mouseup','click'].forEach(t=>it.dispatchEvent(new MouseEvent(t,{bubbles:true})));return 1})()"""%k); time.sleep(2)
+    print(k,J("""(()=>{const ed=document.querySelector('ytve-editor');if(!ed)return 'noeditor';const p=ed.querySelector('ytve-endscreen-editor-options-panel');return p.textContent.replace(/\\s+/g,' ').slice(0,30)+' ... '+p.textContent.replace(/\\s+/g,' ').slice(-90)+' '+[...p.querySelectorAll('ytve-framestamp-input input')].map(i=>i.value).join(' - ')})()"""))
+J("location.href='https://studio.youtube.com/channel/UCfAQFnZ6_mT9DYep-iDCzvw/videos/upload';1"); time.sleep(16)
+print(J("""[...document.querySelectorAll('ytcp-video-row')].slice(0,4).map(r=>(r.innerHTML.match(/vi(?:_webp)?\\/([\\w-]{11})/)||[])[1]+' '+r.textContent.replace(/\\s+/g,' ').trim().slice(0,50)+' ... '+r.textContent.replace(/\\s+/g,' ').trim().slice(-70)).join('\\n')"""))
+E
+
+#### ----------------
+cd ~/Documents/Kritchawat-Projects/Series/pudding-speaks-english/pudding-ep10
+cat >> qc_log.txt <<EOF
+SCHEDULE $(date '+%F %T') GMT+7 edit page visibility -> Schedule -> Nov 27 2026 -> '8:00 AM' -> 'Default set to local time zone (GMT+0700)' -> Done -> Save. Reload: 'Visibility Scheduled', picker Nov 27, 2026 / 8:00 AM / GMT+0700; Content list row m2xH3NyNX88 'Scheduled Nov 27, 2026' (EP.9 -oOQlPMQL50 Nov 26, EP.8 hfORRyEMq6c Nov 25, unchanged).
+READBACK edit page after reload: title exact; description exact (1,685 chars, 11 chapters, EP.9 link -oOQlPMQL50); 20 tags 454/500; not made for kids; altered content No; Education; English; playlist Season 1; thumbnail picture = EP.10; subtitles EN 106 + TH 106 Published; TH/ES/PT/VI/ID Published; end screen Subscribe + video 'Small Talk... | Pudding EP.9' (only one upload has that title; card chosen by id -oOQlPMQL50), both 5:00:03-5:16:03.
+CLOSED: no queue process left; caffeinate -dis left running on purpose for EP.11's session (expires by itself after 50,000 s, about 10:15 on 25 Nov). NEXT.txt, script As-built, metadata As uploaded, bible 3.11, Characters/README, skill lessons written (not committed).
+EOF
+pgrep -fl "runq|runimg|after_|wait_visible" ; ps -o etime,command -p $(pgrep -x caffeinate | head -1)
+python3 - <<'EOF'
+p='docs/pudding-ep10-upload-metadata.md';s=open(p).read()
+i=s.index('## Gate before Schedule')
+s=s[:i]+'''## Gate before Schedule (skill 07 §4a)
+
+| Item | Must show | Status |
+| --- | --- | --- |
+| English | uploaded `out/pudding_ep10.en.srt`, first cue matches, cue count = file, Published | ✓ 106 cues = file (editor markers, re-opened after publish), first "This one is more bigger!", Published |
+| Thai | uploaded `out/pudding_ep10.th.srt`, first cue matches, cue count = file, Published | ✓ 106 cues = file, first "อันนี้ใหญ่กว่า! (ผิด: ใช้ more กับ bigger)", Published |
+| English (automatic captions) | untouched | ✓ only downloaded for the word check |
+| Title & description | TH, ES, PT, VI, ID each Published | ✓ all five "Published Nov 25, 2026" after reload |
+
+## As uploaded
+
+### 2026-11-25 — **https://youtu.be/m2xH3NyNX88** — **Scheduled** Public: Fri 27 Nov 2026, 8:00 AM, GMT+0700
+
+`out/pudding_ep10.mp4` (render 2: 5:16.1, −14.5 LUFS / −1.3 dBTP, A/V 0 ms) uploaded from the owner's Chrome by
+`tools/studio_upload_video.py` (81,199,984 B, SHA-256 checked in the page, 73 s). Read back on the edit page after a reload:
+
+| Item | Read back |
+| --- | --- |
+| Title / description | exact match with this document ✓ (EP.9 link -oOQlPMQL50) |
+| Visibility | **Scheduled** ✓ picker Nov 27, 2026, 8:00 AM, GMT+0700; Content list "Scheduled Nov 27, 2026" |
+| Audience / altered / category / language / playlist | Not made for kids / No / Education / English / Season 1 ✓ |
+| Tags | 20 tags, 454/500 ✓ |
+| Thumbnail | EP.10 picture downloaded after reload (`build/readback_thumb.png`) and looked at ✓ |
+| Subtitles and translations | gate table above ✓ |
+| End screen | EP.9 -oOQlPMQL50 + Subscribe, both 5:00:03–5:16:03 ✓ |
+| Word check (automatic captions) | `build/auto_captions_ep10.srt`: every spoken line matches ✓ |
+
+Open (older episodes: owner's yes): EP.8 says "EP.9 Small Talk (coming soon)" and EP.9 says "EP.10 Shopping for Clothes (coming soon)",
+both without a link (and in their TH/ES/PT/VI/ID translations).
+'''
+open(p,'w').write(s)
+p='docs/pudding-ep10-script.md';s=open(p).read()
+s+='''
+## Prompts
+
+Generated by `tools/make_prompts.py` → `prompts/queue.json` (clips) and `prompts/*.txt` + `prompts/images.json` (sheet, masters,
+edits, cover art).
+
+## As-built changes
+
+| Change | Why |
+| --- | --- |
+| Ned's canon = short dark-brown brow line (as Meta drew it on the sheet) | EP.9 Rosa lesson: settle the face on the sheet. Result: 7 Ned lines, 7 clips, 0 retakes |
+| shoppudbig_v1 (ribbon bow) → v2; shopbig_v1 (giant tie) → v2 | edits of the previous image: "change ONLY the size, the SAME bow tie" |
+| H2 → H2b, H4 → H4b | window blinds / clock marks changed mid-clip; line said once instead of twice |
+| P07 → P07b | outlined white eyeballs, pink skin; the new eye/skin clause fixed it |
+| P08 → P08b | Pudding looked sad and droopy on "I'm boring"; now calm and curious |
+| N05, P08b, O03 cut in two segments, second one cropped | 2–4 s holes between the two sentences |
+| Ollie clips cropped `960:540:20:150` | people appeared outside the shop window in O01 |
+| Watch Again = P02, N04, P07b | measured plan ran 5:19.6 with P03 |
+| Recap = EP.9 L02b, P07 (second part), H6 from 3.5 s | shorter recap (EP.9's H6 first sentence repeats L02b) |
+| Final: render 2, 5:16.1, −14.5 LUFS, −1.3 dBTP, drift 0 ms, 106 EN / 106 TH cues | https://youtu.be/m2xH3NyNX88, Scheduled Public 2026-11-27 08:00 GMT+7 |
+
+Clips: 28 generated (24 lines + 4 retakes) → 24 accepted lines, 0 refused (several "media service overloaded" / stalled replies). Images: Ned
+sheet + masters (shop 1, shoppud 1, shoppudsmall 1, shoppudbig 2, shopbig 2, ned 1) + cover 1. Renders 2 (the first never uploaded), upload 1.
+'''
+open(p,'w').write(s)
+EOF
+wc -l clips/urls.txt; ls clips | wc -l
+cat > NEXT.txt <<'EOF'
+EP.10 done (2026-11-25): https://youtu.be/m2xH3NyNX88 "Shopping for Clothes in English: Don't Say "More Bigger" | Pudding EP.10"
+  Scheduled Public Fri 27 Nov 2026 08:00 GMT+7 (picker + Content list read back after reload). EN (106) + TH (106) subtitles and
+  TH/ES/PT/VI/ID title/description translations Published before Schedule; automatic-captions word check passed. One upload.
+
+Next: EP.11 "Feelings" - scheduled slot Sat 28 Nov 2026 08:00 GMT+7 (docs/season1-schedule-ep9-13.md; finale EP.13 on 30 Nov).
+  Plan: "I'm bored" vs "I'm boring" · "I'm a bit tired." · grammar: -ed vs -ing adjectives (bored/boring, tired/tiring, excited/exciting,
+  interested/interesting) · ends on: Party tonight! -> EP.12 Party ("What do you do?" · "This is my friend..." · present simple).
+  "What do you do?" / "This is my friend" are EP.12's -> not key phrases in EP.11.
+  EP.10's end card says "Next: EP.11 · Feelings!". EP.11's end card must say "Next: EP.12 · Party!".
+  EP.11's end screen -> EP.10 (m2xH3NyNX88) + Subscribe; description links EP.10 as the previous episode.
+  Mistake idea: the cliffhanger itself, "I'm boring." -> "I'm bored." ('boring' is kept by Meta and by ASR; prove bored vs boring with whisper
+  AND the automatic captions). NEW place needed (series rule; used: airport, taxi, hotel, room, cafe, street, canal, park gates, bandstand,
+  clothes shop). Tone: Pudding is never sad, droopy or alone in a shot: "bored/tired" must be SAID with a calm, cheerful face (see P08 lesson).
+  New adult not required: an existing adult (Frank, Walter, Mabel, Rosa, Ned, Lily) can be the Fast English speaker, adult-alone shots.
+
+EP.10 ended on (clothes shop, bright morning): Ollie "I want to look at the jackets. Ten more minutes!" -> Pudding "Ten more minutes? I'm boring." (X)
+  -> Ollie "What? You're not boring, Pudding." -> Biscuit "Pudding says: I'm boring. But what does he really mean? Find out in episode eleven!"
+  Recap clips to copy (clips/ -> clips/ep10_*.mp4): O02 0.5-4.7 (crop 960:540:20:150; cues 0.1 / 2.8), P08b 0.7-2.4 and 5.2-6.9 (second
+  crop 896:504:0:40, cross icon), O03 1.3-2.7 (crop 960:540:20:150) and 4.2-6.1 (crop 768:432:80:200), H6 0.1-8.7 (cues 0.1 / 3.9 / 6.2).
+  Choose 2-4 of them: the recap should stay about 12-16 s.
+Continuity: Pudding bought a plain SKY-BLUE bow tie for Lily's party (Saturday) and still wears it at the end of EP.10; from EP.11 it may be on
+  him or in his yellow backpack (decide, log, keep it for the party in EP.12). EP.11 ends "Party tonight!" = it is Saturday.
+  Ollie has no umbrella in EP.10. Ned the whippet: Characters/10_ned_sheet.png + bible 3.11 (brow line is canon, no lashes).
+
+IDs: EP.8 = hfORRyEMq6c (never link siXip8p8oJ8, Private). EP.9 = -oOQlPMQL50. EP.10 = m2xH3NyNX88. Channel UCfAQFnZ6_mT9DYep-iDCzvw.
+
+Masters (pudding-ep10/masters/*.png, also in meta.ai localStorage as __ep10_<name>): shop (Ollie LEFT, Pudding MIDDLE facing RIGHT, no tie),
+  shopbig (same, big tie), shoppud / shoppudsmall / shoppudbig (ONLY Pudding LEFT facing RIGHT; no / tiny / big tie), ned (Ned alone waist-up
+  RIGHT, turned LEFT), nedsheet. Host: __ep6_host. Others: __ep9_band, __ep9_bandpud, __ep9_rosaclose, __ep9_lilyrosa, __ep7_lily, __ep7_lilysheet,
+  __ep8_walter, __ep8_waltersheet. To get Pudding + Ollie into a new place: attach __ep10_shop and say "use it ONLY for how Pudding and Ollie look".
+
+Meta AI: same thread meta.ai/prompt/1c05c8c0-ea7a-4bba-99ab-4368ec8365dc, owner's Chrome window 645343510, meta.ai tab 645346540 (index 3),
+  my Studio tab 645346567 (index 5). Tab 645346534 is another session's (IuVvzz9QCzQ translations): never touch it. Re-list tabs first. The Mac must
+  be UNLOCKED, lid open, plugged in, meta.ai tab on screen. On 24-25 Nov a clip took 3-13 min; stalled replies (>11 min) come in 3-4 min after a
+  resend (meta.py does it: limit 660 s, reload every 90 s). Start early; host clips first (they only need __ep6_host).
+Tools (pudding-ep10/tools): copy the folder, then replace "pudding-ep10" and the "__ep10_" prefix in runq.py / meta.py / wait_visible.sh /
+  translate_meta.py. make_prompts.py (NEW eye + skin clause for Pudding, wings-still clause for Biscuit, Ned block), runimg.py (retries on overload),
+  qcset.py, build/mk_build.py (builds from ../pudding-ep10/build.py next time) + build/seg.py, build/st.py + build/es.py (Studio helpers),
+  studio_upload_video.py, translate_meta.py. Studio steps as commands: skill refs/07 §6e-6f.
+Skill (owner rule: only this one): ~/Documents/Kritchawat-Projects/digital-creator-skills/youtube-ai-edu-series-creator/ (not committed)
+Open (owner's yes needed, older episodes): EP.8's and EP.9's descriptions say the next episode is "(coming soon)" without a link.
+EOF

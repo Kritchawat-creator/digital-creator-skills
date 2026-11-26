@@ -1,7 +1,7 @@
 # 07 — YouTube Studio upload
 
-Done from a browser tool that has **no file picker**. The owner drags the video file; everything else is set by
-script and read back. Selectors and coordinates were measured in November 2026 and will change: confirm each
+Done from the owner's Chrome by script. **The video file is uploaded by script too** (owner rule, 2026-11-24: "อัพโหลดไฟล์ได้แล้ว"):
+nobody drags anything. Everything is read back. Selectors and coordinates were measured in November 2026 and will change: confirm each
 with a screenshot.
 
 ## 1. Before opening Studio
@@ -14,10 +14,14 @@ with a screenshot.
 
 ## 2. Steps
 
-1. Open `studio.youtube.com/channel/<channel id>/videos/upload?d=ud` and ask the owner to drag
-   `out/<episode>.mp4` in. (Studio's CSP blocks `http://127.0.0.1` fetches and images, so a local server
-   doesn't help.)
-2. **Work in the tab the owner dropped the file into.** If another tab must be used, reload the drop tab at once.
+1. Open your **own** Studio tab at `studio.youtube.com/channel/<channel id>/videos/upload?d=ud` and upload the file
+   yourself: `python3 tools/studio_upload_video.py <tab id> out/<episode>.mp4` (from
+   `scripts/ep6_chrome_tools/`). It sends the bytes into the page in 1.5 MB base64 chunks over AppleScript, checks
+   SHA-256 in the page, builds a `File` and puts it into the dialog's `input[type=file]` with `DataTransfer` +
+   `change`, then prints the video link and Filename (EP.7: 76 MB in 62 s, upload complete within a minute).
+   Studio's CSP blocks `http://127.0.0.1`, so a local server doesn't work; this does. Check the file exists on disk
+   first. Don't ask the owner to drag.
+2. **Work in the tab you uploaded in.** If another tab must be used, reload the upload tab at once.
 3. Confirm the dialog's **Filename** and the video link before editing anything.
 4. **Reuse details** from the previous episode (it copies title, description, tags, language, category and
    playlist), then replace title, description with chapters, and tags. Check the tag counter.
@@ -90,6 +94,21 @@ Reload `studio.youtube.com/video/<id>/edit` and check each item against the meta
 On EP.3 the readback counted `img` elements; the auto-generated preview passed, and the owner noticed the
 missing custom thumbnail.
 
+## 4a. Gate before Public or Schedule: subtitles and translations
+
+Owner rule (2026-11-23, EP.6: "อย่าลืมใส่ซับไตเติ้ลนะ", then "จำไว้อย่าลืมใส่ subtitle translation"). Before the
+visibility step sets Public or Schedule, all of these must be true on the edit page's Subtitles tab:
+
+| Item | Must show |
+|---|---|
+| English | uploaded `out/<series>_epN.en.srt` (With timing), first cue matches, cue count = file, **Published** |
+| Thai | uploaded `out/<series>_epN.th.srt`, first cue matches, cue count = file, **Published** |
+| English (automatic captions) | untouched (never click its pencil) |
+| Title & description | translations **TH, ES, PT, VI, ID**, each **Published** |
+
+If any line is missing, stop and finish it first, even when the owner said "publish now". Write the table into the
+episode's upload-metadata doc with ✓ per line.
+
 ## 5. Word check with automatic captions
 
 The QC tools can't hear words. YouTube's "English (automatic captions)" can, minutes after a Private upload.
@@ -117,7 +136,7 @@ Found this way: two subtitle/audio mismatches (EP.2) and a line spoken twice und
 YouTube can't replace a video file. When burned-in text or sync is wrong:
 
 1. Fix and re-render; run every delivered-file check again.
-2. The owner drags the new file. **Reuse details from the superseded upload** (it is the first tile) to carry
+2. Upload the new file the same way (`studio_upload_video.py`). **Reuse details from the superseded upload** (it is the first tile) to carry
    title, description, tags and playlist; replace only what changed (chapters).
 3. In the end-screen picker the superseded video is listed first and looks identical. Pick the previous episode
    by its title and check the radio text. Tell uploads apart by video ID (the thumbnail URL contains `vi/<id>/`).
@@ -152,14 +171,72 @@ Only a caption file wrong → edit the SRT in place; no re-upload.
 | Thumbnail canvas | `FontFace('…','url(https://raw.githubusercontent.com/google/fonts/main/ofl/baloo2/Baloo2%5Bwght%5D.ttf)',{weight:'400 800'})` and Nunito `{weight:'200 1000'}`; Pillow's `d.text((x,y))` top = canvas baseline `y + ascent` (`font.getmetrics()[0]`); Pillow `stroke_width=10` = canvas `lineWidth=20` + `lineJoin='round'`. Check `measureText` width against Pillow's `textlength` (EP.5: 348.9 vs 348). Inject into `ytcp-video-thumbnail-editor #file-loader` on a freshly loaded edit page, Save — stuck first try |
 | Translations | `Add language` → `tp-yt-paper-item` by exact name for all five first; then per row: real hover on the Title & description cell, click its pencil, check the editor header reads "English\n<Language>", fill `textarea[1]` / `textarea[3]` with the value setter + `input`/`change`, Publish (button inside `ytgn-metadata-editor`). The dialog can take ~3 s to open; retry the header check instead of filling a stale editor |
 
+## 6c. Notes from EP.7 (2026-11-24, scheduled)
+
+| Step | What worked |
+| --- | --- |
+| English SRT (upload dialog) | `#subtitles-button` → "Upload file" (JS click) → inject into `#captions-file-loader`; the cues load behind a leftover "Select subtitles file type" picker → click its **Cancel**, then **Done** in the English editor |
+| Thai SRT (Subtitles page) | Dispatch `pointerover`/`mouseover`/`mousemove` on every cell of the Thai row (`td`, `ytgn-video-translation-hover-cell`) → `#captions-add` appears → "Upload file" → inject into the last `input[type=file]` → Cancel the leftover picker → Publish |
+| Cue counts | Uploaded English: "Edit as text" gives one textarea → 85 = file. A translation track ignores "Edit as text" and renders rows lazily: scroll the editor and key each `div.segment` by its start/end timestamps (`m:ss:ff`), then match every file cue start (±0.1 s) → 85 = 85 |
+| Automatic captions download | Hover events on the row → `#captions-more-options` (never `#captions-edit`) → "Download" (in `tp-yt-paper-listbox`) → ".srt"; the file lands in `~/Downloads` (fetch/XHR wrapping didn't capture it) |
+| End screen | `es_time2.js` sets both, but the first element reverted to the template start; set it again alone (`[0]` item), click the timeline, reselect both and read `ytve-framestamp-input` values |
+| Schedule (edit page) | visibility `#select-button` → `#second-container-expand-button` → `#datepicker-trigger` → `.calendar-day` "24" in the "Nov 2026" block → time input → leaf "8:00 AM" item in `ytcp-time-of-day-picker` → Done → `ytcp-button#save` → reload: "Visibility Scheduled", picker "Nov 24, 2026 / 8:00 AM / GMT+0700"; Content list shows "Scheduled · <date>" but no time. **No Escape** inside the picker |
+| Previous episode's "coming soon" link (Pudding season 1: standing yes, see §8; another series needs its own yes) | Edit page, background tab: reload, find the one text node with the old line in `#description-container #textbox`, select only that range, `execCommand('insertText')`, check the new text equals the old text with that one replacement, Save, reload, compare again. **The TH/ES/PT/VI/ID translations keep the old line**: ask for them in the same question, then run `link_translations.py <tab on /video/<id>/translations> "<old>" "<new>" <backup.json> <Language>` one language at a time, reloading the tab between them (it backs up, changes only that line and clicks the editor's own `#publish-button`, because a background tab never paints the dialog), and compare the public `&hl=` pages with the backup |
+
+## 6d. Notes from EP.8 (2026-11-24, uploaded by Claude, scheduled)
+
+| Step | What worked |
+| --- | --- |
+| Upload | `studio_upload_video.py` in a freshly navigated `/videos/upload?d=ud` tab: 88 MB, SHA OK, 71 s. Make the Studio tab the window's active tab first (`set active tab index`): while it was a background tab every dialog button read `offsetParent=null` |
+| Reuse details | `#reuse-details-button` → click the `ytcp-entity-card` whose text has the previous "EP.n" → `#select-button` (Reuse) |
+| End-screen template | `.click()` on "1 video, 1 subscribe" did nothing; pointer events with clientX/Y on the template's `.card` (pointerdown, mousedown, pointerup, mouseup, click) applied it. Choose specific video → click the `ytcp-entity-card` of the previous episode → radio text reads "Video: <title>". Subscribe kept 4:56:03 after the shared set; `es_one.js` on element [0] fixed it |
+| Caption editor buttons | On the Subtitles page `#captions-edit` / `#captions-add` appear only after hover events on every cell + a JS click on the row's first `ytgn-video-translation-hover-cell` and its `#cell-container`, then **wait ~1.5 s** before querying |
+| Cue counts after publish | Open each track with `#captions-edit`, count `ytve-captions-marker-container` (EN 94 = file, TH 90 = file), close with the editor's `#close-button`; no edits, nothing to save |
+| Schedule time | The time list's "8:00 AM" contains a narrow no-break space: match with `textContent.replace(/[\s\u202f\u00a0]+/g,' ').trim()`. Time zone line reads "Default set to local time zone (GMT+0700)". Content list columns: `Scheduled / Nov 25, 2026` |
+
+## 6e. Notes from EP.9 (2026-11-24, scheduled)
+
+| Step | What worked |
+| --- | --- |
+| English SRT | `#subtitles-button` → patch `HTMLInputElement.prototype.click` (no OS picker) → leaf "Upload file" click → set `input#captions-file-loader` files + `change` → count `ytve-captions-marker-container` → the type picker's `#cancel-button` → `#publish-button` ("Done") → the button reads "Edit" |
+| Radios after Reuse details | Reuse does **not** carry audience or altered content: both read `aria-checked=false`; set and read back |
+| End screen | Pointer events on the "1 video, 1 subscribe" `.card`; select item [1] (video) → "Choose specific video" → the card whose HTML has the wanted id; start `4:52:03` typed per element, twice, then both read back |
+| Date | `#datepicker-trigger` → `.calendar-month` with "Nov 2026" → `.calendar-day` "26"; time input click → `tp-yt-paper-item` "8:00 AM" (normalised spaces) → Done → `ytcp-button#save` → reload and reopen the picker to read it |
+| Whole Studio pass | 20:0x → 20:2x, about 25 min by script, with `build/st.py` (`J(js)` helper) instead of one-off files |
+
+## 6f. Notes from EP.10 (2026-11-25, scheduled)
+
+The whole Studio pass is in `scripts/ep6_chrome_tools/studio_steps_ep10.txt` (every command in order, all worked first try, about 15 min
+from the upload to the read-back schedule; `st.py` = the `J(js)` helper, `es.py` = end-screen times). Pick the Reuse-details card and the
+end-screen card **by id** (`outerHTML.includes('<previous id>')`). End-card start in frames = whole seconds + tenths × 30 (300.1 s → `5:00:03`).
+Automatic captions can add a stray word over the end-card music ("Hey,"): not a mismatch.
+
+## 6g. Notes from EP.11 (2026-11-25, scheduled)
+
+`studio_steps_ep10.txt` again, every step first try (03:16 → 03:29). Change five things: episode number in the file names, the previous episode's id
+(two places: Reuse card, end-screen card), the new id, the calendar day, the end-card start in `es.py` (296.7 s → `4:56:21`). Generate everything in Meta AI
+before switching the window to the Studio tab (a hidden meta.ai tab stops rendering), and switch back to it afterwards.
+
+## 6h. Notes from EP.12 (2026-11-25, scheduled)
+
+`studio_steps_ep10.txt` a third time, every step first try (09:31 → 09:45). Before opening Studio check the delivered file with `ffprobe`: `r_frame_rate` 30/1 and
+duration equal to the plan (EP.12 render 1 was 60/1 and 0.5 s too long).
+
+## 6i. Notes from EP.13 (2026-11-25, scheduled, season finale)
+
+`studio_steps_ep10.txt` a fourth time (21:16 → 21:36). One trap: the end screen showed 5:37:18 in the editor but the first save kept the template's 5:33:18 (last 20 s).
+**Always re-open the end screen after the reload and read both elements' times.** Fix: edit page → "End screen" → `es.py` again → the editor's Save → re-open and read (EP.12 and
+earlier were read back right). On a season finale the description and the translations carry no "Next episode" line.
+
 ## 7. Traps
 
-- **A leftover upload dialog published a video.** The owner's drag opened the dialog in one tab; the work was
+
+- **A leftover upload dialog published a video.** The upload opened the dialog in one tab; the work was
   finished in another. Clicking through the stale dialog reached Visibility with **Public** preselected, and
   EP.2 went Public. The owner kept it, but it should have been their choice.
-- If the browser pane restarts between the drag and the next step, the upload survives as a **Draft** row in
-  Content: "Edit draft" reopens the same dialog (`udvid=<id>` in the URL). Check there before asking for a
-  second drag. The pane can also come back signed out; the owner signs in.
+- If the browser restarts between the upload and the next step, the upload survives as a **Draft** row in
+  Content: "Edit draft" reopens the same dialog (`udvid=<id>` in the URL). Check there before uploading a
+  second time. The pane can also come back signed out; the owner signs in.
 - The end-screen chooser closes on the first click; a second click lands on "Most recent upload". Click once,
   then check the radio.
 - A Private previous episode can be an end-screen element, but viewers of a Public video won't see it. Tell the
@@ -172,3 +249,12 @@ Only a caption file wrong → edit the SRT in place; no re-upload.
 
 Audience and AI disclosure; anything Public; creating a playlist; the automatic-captions download; deleting an
 upload (naming the video); changing an older episode. A yes for one of these doesn't cover the next.
+
+**Never on this list: uploading the video file.** Claude uploads it itself with `studio_upload_video.py` and does not
+wait for the owner (owner, 2026-11-24: "สามารถอัพโหลด คลิปลง youtube เองได้เลย ไม่ต้องรอฉัน"). When the owner has
+given a release plan (e.g. EP.7–EP.10 "daily 08:00"), scheduling at that slot and the automatic-captions download are
+covered by it (refs/10 §5).
+
+**Next-episode links, Pudding season 1** (owner, 2026-11-24, asked about every older episode in all languages: "Yes, all
+episodes"): after episode N is Scheduled, replace the "(coming soon)" line of episode N-1 with N's link in English and
+TH/ES/PT/VI/ID. That one line only; reload and compare. Nothing else on an older episode is covered by this yes.

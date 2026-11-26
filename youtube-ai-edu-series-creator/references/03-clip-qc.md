@@ -93,6 +93,33 @@ Each part shows its number, clip, seconds and the expected line on screen. Log t
 One listen can still be wrong. In EP.3 the owner heard a line once; YouTube's automatic captions showed it
 twice, and the upload had to be replaced. For a short line with two bursts, cut to the first burst.
 
+## 5a. Local word check when nobody listens (EP.8)
+
+When the owner asks for no check-ins, run `whisper-cli` (Homebrew) with `~/.cache/whisper/ggml-small.bin` on every accepted
+window: `tools/asr.sh NAME in out` (16 kHz mono WAV → transcript). EP.8: 18 of 18 lines read back word for word, including the
+intentional mistake ("How to go to the big park") and a slow line in three parts. Expected noise: "Putting an Ollie" for
+"Pudding and Ollie", "stream" for "street", sounds in brackets ("(sighs)") outside the speech. It does not replace the
+automatic-captions check after upload, which still decides.
+
+**Intentional mistakes:** whisper "repairs" grammar. Check the mistake line's token probabilities (`whisper-cli -ojf`) and prefer
+mistakes with an extra content word; a dropped unstressed word ("are", "a") can't be proven (EP.9). `tools/qcset.py NAME:START:END …`
+prints the ASR of several clips and stacks their sheets + 5 fps strips in one image.
+
+**Near-identical words (EP.11, bored/boring):** prove them three ways: whisper on the exact window, its token probabilities (0.93–0.99), and the automatic
+captions after upload. Reject a take when whisper hears an extra small word in several windows ("I'm **an** interested", p 0.74) and write the line so
+it can be proven ("I am interested").
+
+**Eye strip and envelope (EP.12):** `scripts/ep6_chrome_tools/eyez.py NAME:a:b:crop …` = 8 frames of one crop per row (eyes, listener's mouth); `env.py NAME a b` = speech runs with
+every gap ≥ 0.2 s (finds the holes to cut and the second take of a line). Round windows to 0.1 s.
+
+**Question tone and stutters (EP.13):** whisper on the exact window decides ("went to a party?" on the whole clip, a plain statement on the cut). Repeated or doubled words ("home
+home", a second "do") show in the windowed run; cut before them or retake. `scripts/ep6_chrome_tools/zf.py NAME a b crop` = 9 big frames of the used window, `q.sh NAME` = whisper + speech runs + pitch.
+
+**The word check says nothing about the picture.** EP.8's host clips passed ASR and were uploaded without anyone looking at
+them; in one, Biscuit said "It's on your right" while pointing to the viewer's left. Look at a contact sheet of every clip
+before upload, host clips included. For left/right/here/there lines, check the gesture against the **viewer's** side, or prompt
+the host to keep the wings still. Compare every new character's clips with the sheet (brows, trousers), not only with the master.
+
 ## 6. Before and after rendering
 
 These need the episode's `build.py` (see `04`):

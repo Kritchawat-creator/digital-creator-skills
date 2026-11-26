@@ -185,3 +185,6 @@ cues) and real A/V drift (fix: PCM segments). `sync_check.py drift` tells them a
 - Background builds: pipe through `tail` only at the end, or the progress output is hidden.
 - Reused cuts from an earlier episode are copied into `clips/` as files (`ep2_P05.mp4`) with that episode's in/out
   points and cues, so the build has no cross-folder dependency.
+- EP.13 (season finale): quiz of 12 questions = one phrase per episode, badge "EP.n · Topic", gap with its first letter (only one possible answer), answer card with that episode's original
+  host voice (audio only). 3.2 s question + (voice + 0.6) s answer = 75 s; the episode runs about 30 s longer than usual. Show the first sentence of the final reveal before the lesson
+  ("I have an idea.") and the whole reveal after the quiz; end card "Season 1 finale! / Season 2: coming soon" instead of "Next: …", Biscuit closes the season instead of "Find out in …".
