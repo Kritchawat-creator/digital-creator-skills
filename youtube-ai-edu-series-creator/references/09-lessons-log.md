@@ -166,6 +166,24 @@ steps repeat).
 | 13 | Objects named in the prompt but not in the master grow into the picture (trolleys), travellers and buildings appear behind the windows | 9-frame zoom | 4 clips | Scene text = what is in the master; "EMPTY hall", "ONLY plain pale sky" |
 | 13 | SLOW line spoken faster than the FAST line | words per second | 1 clip | "How... was... your..." word by word |
 | 13 | Mac at 1 % battery, render throttled, then 9 h asleep and locked | `pmset -g batt` | 9 h | Check power before clips and renders; tell the owner under 30 % |
+| FE1 | New series from an owner's character sheet that carries words ("Teacher Mom", "English Fun") | design | 0 | Attach the sheet ONCE in a new thread to draw one text-free full-body master per character (front, side, 3 calm faces), then attach only those masters (EP.1 *Everyday English at Home*, 4 masters first try) |
+| FE1 | Character masters copied pseudo-text tags onto sneaker tongues; an edit to remove them also removed a dress flower and the laces | 3× zoom on the master | 2 images | Zoom every master for tiny labels; compare the edit with the original before accepting it, keep the original if the edit loses a canon detail |
+| FE1 | Mac locked itself mid-queue on AC power (10:04-11:18) | `ioreg -n Root -d1` IOConsoleLocked | 74 min | Queue waits by itself (`wait_visible.sh`); tell the coordinator once; do script/build/metadata/translations offline meanwhile |
+| FE1 | Kid listener's lips part in the pause BETWEEN the speaker's two sentences | `eyez.py` face strip | 1 clip | Cut the line into two windows around the gap (second part cropped), as Pudding's split takes |
+| FE1 | Drift row +1050 ms on a 1.1 s host take followed by a second take of the same words | `sync_check drift` | 0 | Repeated-phrase false match: re-measure with `PAD = 40` (0 ms) |
+| FE6 | Meta added a sneeze / cough / sniff before or after the line in 4 of 27 clips of an illness episode, although every prompt said "NO coughing, NO sneezing" | whisper of the whole clip ('(sneezes)', '(coughs)', '(sniffling)') | 0 (windows) | Whisper every gap, not only the line; set the in/out points clear of them; drop the illness negatives from prompts that do not need them |
+| FE7 | Rain streaks animated INSIDE the room (over the wall, the sofa and a child's hair) in kids/adult clips made from masters with a rainy window | full-size frame zoom | 6 retakes | "Rain only as a few STILL raindrops on the glass, NO falling rain lines anywhere"; zoom every rain clip |
+| FE7 | "Paper deca- deca- decorations": a false start passed whisper whole + halves and splitcheck; the automatic captions heard "decker decorations" after upload | auto-captions word check | 1 render + 1 upload (superseded upload left Private for the owner) | Word-level whisper (-ml 1), flag words > ~0.9 s, 0.8 s sub-windows across long words, before rendering |
+| FE7 | The rain-only lamp clip played at speech loudness (-13.8 LUFS): clip_gain lifts every window to -18 | per-segment ebur128 on the delivered file | 1 render | QUIET target (-27) for no-speech clips |
+| FE7 | Meta voiced the prompt text after the line (T03 retake) and added '[thunder]' before a line (I02r) although thunder was never named | whisper of every gap | 0 (windows) | Whisper every gap of every clip |
+| FE7 | A host clip came back with one take only (H5) and one with a broken middle take (H4) | whisper both halves of each host clip | 1 spare | Keep queuing spares for key host lines; check two clean takes per host clip |
+| FE8 | Character masters made from the owner-derived SHEETS + a new place picture came out small, in the place picture's watercolour style, with childlike parents (5 of 8 rejected) | side-by-side with the previous master | 5 image sends | Attach the series' own SHOT of the character ALONE and ask to change ONLY the background ("same drawing, size, framing, pose") |
+| FE8 | Meta made the table in front of the seated children SEE-THROUGH after ~1 s (legs and a paper on a lap appeared) in 3 of 11 clips, even with "the table stays EXACTLY where it is" | bottom row of every contact sheet (0.5 s vs 1.5 s) | 3 retakes | Crop every kids window head-to-chest (960:540:160:0) so the table area is out of frame; pick windows after any change |
+| FE8 | The mistake take with perfect audio had a small listener lip-part (T01) | 10 fps mouth strip of the listener | 1 retake pair | Queue two mistake takes + the baseline in batch 1; mouth-strip the listener in every kids clip |
+| FE8 | Meta repeated the kid's question at the end of the clip (I04 'Where is my ribbon?' at 4.9 s) | whisper the whole clip | 0 (window) | Cut the window before any repeat; splitcheck/wordcheck on the window only |
+| FE8 | Two short host lines in a row came back with ONE take ("Of course!" H5 and its spare H5b) | whisper both halves | 0 (spare used) | Take 2 / the shadow voice may come from the spare clip (build.py PHRASES accepts ("H5b", a, b)); queue two spares for short host lines |
+| FE8 | The cliff-replay chapter started exactly 10 s after "Watch again" once Watch Again was two clips | mkmeta chapter list | 0 | Merge chapters closer than ~12 s (YouTube drops ALL chapters if one is < 10 s) |
+| FE8 | build.py's limiter 0.70 measured -1.0 dBTP on the delivered file (EP.7: -2.2 with the same chain) | ebur128 true peak on the delivered file | 1 final pass | final_pass.py 0.67 -> -14.8 LUFS / -2.5 dBTP; then re-run drift on the delivered file |
 
 ## 3. What the numbers say
 
@@ -200,6 +218,101 @@ steps repeat).
   A clip took about 40 s from 01:36 at night (10 min before), so retakes were cheap.
 - EP.10: that rule worked (Ned: 0 retakes). The four retakes were two host clips, Pudding's eyes/skin, and a sad face.
 
+- Everyday English EP.2 (2026-11-26): 25 clips -> 24 cuts, 0 refusals, 0 listener faults in the 23 first takes (kids two-shot + parent-alone reverse shots + host).
+  One re-upload: the ending line had a doubled word ("have have") that whisper-small hid on the whole window; the automatic-captions check caught it
+  (03 §5a split windows). The is/are mistake "Where is my shoes?" was provable (whisper is p0.96, automatic captions 3/3). Meta drew feet the prompt said
+  to hide -> crop every two-shot; the sofa-insert sneakers got a Converse-like round side patch -> an edit removed it ("remove the round circle patch").
+
+- Everyday English EP.3 (2026-11-26, supermarket): 28 clips -> 22 used, 0 refusals, 0 listener faults; every Meta prompt in Thinking mode (owner rule, MODE logged per
+  batch). One upload (render 2; render 1 was caught before upload: a quiz card wrapped "(some /" + "any)" and the true peak was -0.3 dBTP after AAC). The "Two
+  breads, please." mistake was provable (whisper ads:1.00 on the whole window and both split halves; automatic captions 3/3). Retakes came from content, not
+  mouths: a flower clip drawn lilac (I03), a host clip with one take (H5), a breathy first host take (H1). "Say it ONCE" was broken three times (a whispered
+  repeat, a line said twice, "Sorry" twice): `splitcheck.py` checks every window before rendering. Meta's speaking pace stays ~2.7 words/s whatever the prompt.
+
+- Everyday English EP.4 (2026-11-26, baking in the kitchen): 33 clips -> 25 used, 0 refusals, 0 listener faults; 6 images, 0 refused; every Meta prompt in
+  Thinking mode. One upload (render 2; render 1 caught before upload: a long "Fill the gap" quote wrapped mid-sentence -> "Fill the gap:" on its own line).
+  "I cook a cake!" survived with an emphasis clause (cook:0.89 whole, 1.00 / 0.77 halves; automatic captions 3/3). An adult-alone oven master (door closed, dark
+  window, plain knobs, "does NOT touch it") passed; the kids-behind-the-counter master still came back wider with a sneaker showing -> crop every kids clip.
+  Two Toby clips came back ~3 semitones low (296/308 Hz vs 348-444): retakes with "LIGHT, HIGH little boy's voice (not deep)" gave 381/421. A build bug was
+  caught by a cue-vs-subtitle check: CUES keyed by clip name applied to BOTH windows of a split clip -> CUES keys may be (name, t_in). Studio silently dropped a
+  101-character Vietnamese title (no row after publishing) -> assert every translated title <= 100 characters.
+
+- Everyday English EP.5 (2026-11-26, at the park): 31 clips -> 26 used, 0 refusals, 0 listener faults kept (one small 'o' lip-part trimmed off a window);
+  7 images, 0 refused; every Meta prompt in Thinking mode. One upload (render 2; render 1 caught before upload: the hook's buzz SFX on the mistake made the
+  delivered-file whisper hear "I can't ride!" -> cross + buzz after the line). "I can to ride!" survived with an emphasis clause (to:0.75 whole, 0.96 second
+  half; automatic captions "I can to ride." 3/3, every can/can't right). Outdoors with children passed: family still first, kids beside parked bikes, parents in
+  adult-alone reverse shots, a no-people dog master + silent clip. The LIGHT, HIGH Toby voice line used from the start: Toby 320-421 Hz, no retakes. Studio:
+  after Reuse details the visibility radio was unset and Save left a DRAFT ("Edit draft" -> Private fixed it). sync_check drift gave two false +1.3-1.5 s
+  peaks on short host takes with a pop SFX (speech envelopes matched). localStorage 4.94M -> three superseded keys backed up and freed -> 4.89M after EP.5.
+
+- Everyday English EP.6 (2026-11-26, feeling unwell): 27 clips -> 20 used, 0 refusals, 0 listener faults; 4 images, 0 refused; every Meta prompt in
+  Thinking mode. Series plan ("in bed") vs bible ("no in-bed, no sad children"): the safer rule won -> the ADULT (Dad) is unwell, SAID only, in an armchair with a
+  plain blanket; the child's line "I have a pain head." is a learner's mistake to Mum's teaching question, so no child is ever shown unwell. Mistake proof:
+  pain:0.81 head:0.97 whole, 'pain' in both halves; auto captions "I have a pain head." 3/3. One render, one upload (5:24.2). Illness noises Meta added outside
+  the lines (4 clips) were cut by the windows. PRIVATE set explicitly in the visibility step after Reuse details -> no draft. Card-text, sync and word checks
+  passed first time (splitcheck 35 windows, 0 repeats). localStorage 4.89M -> five EP.3 keys backed up and freed -> 4.48M after EP.6.
+
+- Everyday English EP.7 (2026-11-26, rainy day indoors): 40 clips -> 20 used, 0 refusals, 0 listener faults; 8 images, 0 refused; every Meta prompt in
+  Thinking mode. Dad's rest settled first (the children make the party plan; no illness word -> ILL_NEG dropped, BENSIT kept without cough/throat words). The calm
+  lights-out passed: the dim test images first (Meta draws "dim" mildly and removes the lamp), a no-people lamp-off clip (spare L01b: the lamp fades and stays),
+  only Nina speaks in the dim room, a family still with a plain flashlight. Rain streaks drawn INSIDE the room cost two prompt fixes and 6 retakes. Mistake proof:
+  "Let's to play a game." to:0.86 whole, 0.74 / 0.67 halves (to, never go/do); auto captions "Let's to play a game." Renders 3 (render 1: rain-only clip at speech
+  loudness), uploads 2 (upload 1's word check caught Ivy's false start "deca- deca- decorations"; superseded upload left Private for the owner). localStorage
+  4.48M -> three EP.1 kitchen keys backed up and freed -> 4.65M after five new keys.
+
+- Everyday English EP.8 (2026-11-26, craft table: decorations): 31 clips -> 23 used, 0 refusals; 11 images (5 off-style masters rejected), 0 refused; every Meta
+  prompt in Thinking mode (42 sends). EP.7's lights-out settled with a no-people lamp-ON clip made from L01b's last dim frame (first try). New place without a window
+  (no rain clause needed). Craft safety: no scissors anywhere, requests only said, glue stick only in a no-people insert, the "ribbon" a separate craft prop in two
+  no-people inserts (present / gone) so Ivy's canon hair bow never changes. Politeness mistake proof: "Ivy, give me the glue." give:0.97 me:1.00, no "please", auto
+  captions x3 exact. New tools/wordcheck.py (word timings + probes) ran on every window before the render: 0 false starts. One render (+ final_pass 0.67), one upload
+  (5:29.3, -14.8 LUFS / -2.5 dBTP). localStorage 4.65M -> three EP.5 park keys backed up and freed -> 4.68M after five new keys.
+
+- Everyday English EP.9 (2026-11-27, video call with Uncle): 33 clips -> 22 windows used, 0 refusals; 11 images (laptop insert x3, thumbnail x3), 0 refused; every
+  Meta prompt in Thinking mode. The screens problem was solved by the story (the call is sound-only), a no-people laptop seen from behind, and the unseen uncle's
+  Meta audio played over that still (Meta closed the lid in the clip and ignored "deep"; one clip for both of his lines = one voice). The study kids master (big
+  empty desk) failed 6 of 8 clips (pull-back, vanishing desk, curly hair, worse when a prompt named the out-of-frame laptop); a close head-to-chest master held 3 of 3.
+  Mistake proof: "Hello! Who are you?" exact (no calling/please); automatic captions after upload: "Hello. Who are you?" x3 at the mistake spots, every other line
+  word-exact (PASS). REAL rule (new 27 Nov) failed render 1 on composition only: the table two-shot crop cut through the resting hands and the thumbnail was cut at
+  the ankles -> new crops, render 2 (5:28.3, -14.7 LUFS / -2.3 dBTP, audio sample-identical, drift 0), no new Meta generation.
+  The upload hit YouTube's DAILY UPLOAD LIMIT (10 uploads in 24 h on 26 Nov): attempts at 01:30 / 01:45 and 11:12 (just after the owner verified the account)
+  created no video ("Creating link..." forever); the retry at 11:50, after the oldest upload aged out, worked: pNaAob7idCs, Scheduled 9 Dec 08:00.
+  The end-screen times set before saving came back as the default 5:08:09 on re-open; the es_open.py readback caught it (es.py + Save + reload).
+
+- Everyday English EP.10 (2026-11-27, clothes for the party, run in parallel with EP.9's upload wait): 23 clips sent -> 26 windows used, 0 refusals; 10 images, 0
+  refused; every Meta prompt in Thinking mode. CLOTHES TRAP solved without changing on screen: garments HELD UP on hangers in front of the chest (6 of 6 clips held
+  framing + prop) or WORN OVER the canon outfit (held ~5 s, then Meta drifted the cardigan back toward the canon look: windows end by 5 s); prompts never said try on /
+  put on / take off. The three prop shots were one-change edits of one base shot (identical faces/background). The cliffhanger line "There's a stain on Toby's hoodie!"
+  in a clip that SHOWS Nina made Meta paint a stain on Nina's own blouse and gave her a worried face (2 of 2) -> her line played as voice over the no-people stain still.
+  A drawn shirt got a pseudo-text neck label (fixed with a one-change Meta edit). Plan 5:04 -> a "too ... for" card + a 5th quiz question (word order) -> 5:21.8. One
+  render (-14.7 LUFS / -2.1 dBTP, drift 0). wordcheck.py crashed when whisper timed a last word past the window end (fixed). A tab guard kept the parallel session's
+  Studio tab from being pulled behind meta.ai.
+  Then the owner's REAL rule arrived (2026-11-27, "ให้ สัดส่วน element และองค์ประกอบฉาก สมจริง สมมาตร สมเหตุสมผล"): the audit failed the kids masters (Toby drawn
+  bigger and higher than his older sister) and the parents' shots (right of centre). Fixed at the base: a correction edit made Ivy a little taller (Meta also widened it
+  to full length, so clips are cropped between the hands and the shoe marks), parents re-made centred, the prop shots re-made from the new base, 12 story clips
+  retaken (0 refusals, Thinking mode), render 2. Lesson: run the REAL check on the first master of every place, before any clip.
+
+- Everyday English EP.11 (2026-11-27, cleaning day, run while EP.10 uploaded): 26 clips sent -> 31 windows, 0 refusals; 9 images, 0 refused; every Meta prompt in
+  Thinking mode. NEW place (playroom) made by changing only the background of the previous episode's REAL shots; the kids shot carried EP.10's lilac carpet into the
+  new room (the place master had floorboards) -> one correction edit before any clip. Held props again (Toby's plain cloth, Ivy's folded blanket) held 100%. The
+  present-perfect mistake "I already clean it." came out right in 2 of 2 takes with the exact-words clause (whisper: no 've, 'clean' 0.95-0.97); the auto-captions
+  pair "I've already" vs "I already" was proved on the delivered file x3. Two-shot lines lost their second sentence twice (the listener opened her mouth during
+  "It's clean"; a repeated-looking "Let's"): keep the clean first part, or check with word timings (-ml 1) before retaking - whisper on a window that starts inside a
+  word invents the whole word again. A SLOW take with a sigh and a 3 s gap before the last word became two windows (second one closer). The CONTACT SHEET caught a
+  card with empty boxes: "→" is not in Nunito, and build.py's glyph check could never fail (it compared each glyph with getmask(""), which is never equal) -> compare
+  with the font's .notdef (getmask("\U0010FFFD")) and check every burned string against both fonts; one extra render, no upload. Sharing one Chrome window: the
+  parallel session's Studio steps BLOCKED in a background tab (upload dialog and visibility popup stay display:none while document.hidden) while EP.11 kept meta.ai in
+  front -> hand the window over by message as soon as the Meta batches end; neither session can run its browser steps with the other's tab in front.
+
+- Everyday English at Home EP.12 "Party Plans" (2026-11-27, sLV489xRUmw, Scheduled 12 Dec 08:00; 37 clips + 9 images, 0 refused, Thinking every send; 2 renders,
+  1 upload): a NEW outdoor place (the garden) made from the EP.11 character shots by changing only the background. The kids shot came back 3:2 with Toby nearer the
+  camera (head bigger than Ivy's) -> REAL fail, retake with "same 16:9 shape, ONE line, SAME distance". Meta pulled every adult garden clip far back -> crops measured
+  again on the first clips. A dark face-down phone read as a screen -> pale case. Grandma (voice only) had Nina's pitch band in 4 of 4 takes even with "elderly" -
+  logged, lowest take chosen. The mistake "I going to hang the lights": whisper inserts a weak 'm (p~0.2) in windows with trailing silence; T02d was 'm-free in 5 of 6
+  windows and in wordcheck; render 1's cross + buzz at the line end masked the final 's' of "lights" in all three copies (delivered-file whisper caught it; MX_ICON
+  moved 0.2 s later, render 2). wordcheck caught Ivy's "going to be... to be" that the whole-clip whisper line hid (read asrp on the exact window). Measured windows
+  ran 23 s over the estimate (birdsong/sighs before lines, an 8.4 s phone call): cut the optional recap clip, the ring still in the closing replay, Watch Again to
+  one clip and the grammar cards to three -> 5:30.0. The automatic captions heard "I going to hang the lights." x3 on the first try.
+
 ## 4. Corrections to earlier notes
 
 - The earlier assembly notes gave EP.3 as −14.6 LUFS / −1.2 dBTP. Those were EP.2's numbers. The delivered EP.3
@@ -213,4 +326,14 @@ steps repeat).
 - Pinned comments, community polls, the season practice marathon.
 - Any analytics: titles, tags and thumbnails are untested against real impressions and click-through.
 - Lip sync → Text as a fallback voice route: documented by Meta, not used.
-- A local speech-recognition check before upload (the word check currently needs a Private upload).
+- (Built since: local whisper checks before upload - `asr.sh`, `asrp.sh`, `splitcheck.py`, `wordcheck.py` (EP.8). The automatic-captions word check after the Private upload still decides.)
+
+- Everyday English at Home EP.10 Studio (2026-11-27, GA5imcfT8Mc, Scheduled 10 Dec 08:00): one upload, no limit message (8 uploads in the trailing 24 h). Two Studio faults, both fixed in place: (1) with the Studio tab hidden no overlay opened (the upload dialog closed itself after the upload) → front the tab in an agreed window, Content → Edit draft; (2) the Subtitles button opened the editor pre-filled from the automatic captions and fe_04 published 43 cues → editor Options → Upload file → With timing → 94 cues. See 07-studio-upload.md.
+
+## Everyday English at Home EP.13 "The Cake" (2026-11-27/28)
+- Shop person: option (b) (no new character: a new design is the owner's pick and the run had no check-ins); the neighbour only said. 0 refusals in 32 clips + 7 images.
+- Meta outage 22:30-00:30: 'Something went wrong' on every send (old thread + new chat); the reason only showed on a plain no-attachment prompt ('safety check service
+  temporarily unavailable'). Cost ~2 h; method: probe every 15 min, chain the rest of the queue.
+- SLOW came back as fast as NORMAL (2.9 vs 3.0 w/s) -> one retake with 'every word separate, ~8 s' (1.5 w/s). FAST stuttered 'the- the big' (only 1 s probes heard it).
+- Short lines repeat their last word ('I want cake. Cake.', 'please. Please.'): queue 3 mistake takes; T01 had a 0.75 s pause before 'cake' but no extra words.
+- Delivered on render 1, one upload; the mistake had no would/'d/a/some/please in any window, the delivered file or the automatic captions.

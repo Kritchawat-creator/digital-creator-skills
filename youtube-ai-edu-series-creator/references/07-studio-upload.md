@@ -258,3 +258,24 @@ covered by it (refs/10 §5).
 **Next-episode links, Pudding season 1** (owner, 2026-11-24, asked about every older episode in all languages: "Yes, all
 episodes"): after episode N is Scheduled, replace the "(coming soon)" line of episode N-1 with N's link in English and
 TH/ES/PT/VI/ID. That one line only; reload and compare. Nothing else on an older episode is covered by this yes.
+
+## Daily upload limit (Everyday English EP.9, 2026-11-27)
+
+After 10 uploads in 24 hours the upload dialog takes the bytes ("Video upload complete", "Processing complete") but the "Video link" stays "Creating link...",
+the playlist picker says "No playlists available" and the subtitle / end-screen editors open empty. Check `document.body.innerText` for "Daily upload limit
+reached" right after `studio_upload_video.py` whenever no link is printed. No video is created (nothing to delete). Leave via the Content list URL (no close
+button in that state). Verification is the owner's account action: do not click "Verify". Retry when the oldest upload of the 24 h window has aged out (list the
+upload times from every episode's qc_log). Plan one upload per episode; superseded re-uploads count. The owner's verification did not lift the limit at once (EP.9: still limited 15 minutes after it); each limited attempt creates no video, so one more retry after the window is safe.
+
+## End-screen times can be lost (EP.9)
+
+The times set in the end-screen editor (fe_06) read back as the default (end minus 20 s) after the Private save in EP.9. Always re-open the end screen after the Schedule save (es_open.py), select each element and read its framestamp inputs; if wrong, run build/es.py in the open editor, click Save, reload and read again.
+
+
+## Hidden Studio tab: overlays do not open (Everyday English EP.10, 2026-11-27)
+
+With another tab in front (document.hidden = true) the upload dialog closed itself after the upload ("Saved as private", a Draft row), and no overlay opened again: "Edit draft", `?d=ud&udvid=<id>`, the Reuse picker and even the visibility popup on the edit page all stayed `display:none` (the elements exist in the DOM, so `textContent` checks look fine; check `getComputedStyle(paperDialog).display` / `offsetWidth`). EP.9's background pass worked earlier the same day, so do not rely on it. Fix: agree a window with any session that needs its own tab in front, front the Studio tab, Content list → "Edit draft" (the draft keeps the bytes and the link), then run 02 → fe_15 as usual, and put the other tab back in front at the end. Parallel-session rule (coordinator, 2026-11-27): only one session runs Meta at a time, and the uploading session fronts Studio for its whole pass (upload → Schedule → Content readback) while nobody runs Meta; then it puts meta.ai back in front.
+
+## Subtitles button opens the automatic text (EP.10)
+
+When processing is already complete before fe_04, the upload dialog's Subtitles button can open the caption editor PRE-FILLED from the automatic captions (no "Upload file" button), and fe_04's Done publishes that as "English by you" (EP.10: 43 cues instead of 94). Check the marker count against the SRT before Done. Fix: Subtitles "Edit" → editor ⋮ Options (`#more-actions-menu`) → "Upload file" → "With timing" → inject the SRT into `input#captions-file-loader` → count the markers → Cancel the leftover type picker → Done; fe_12 re-opens and counts both tracks.

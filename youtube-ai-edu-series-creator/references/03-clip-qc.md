@@ -36,6 +36,18 @@ floor = sorted(vals)[len(vals)//5]
 line = "".join("#" if v>floor+12 else "+" if v>floor+6 else "." for v in vals)
 ```
 
+### REAL check (owner rule 2026-11-27, hard gate)
+
+Owner rule 2026-11-27 (hard gate): "ให้ สัดส่วน element และองค์ประกอบฉาก สมจริง สมมาตร สมเหตุสมผล" — element proportions and scene composition realistic, symmetric/balanced and logical. On every master, every grid (`build/grid.py`), the delivered contact sheet, every insert still and the thumbnail, check and log one `REAL` line per batch:
+
+1. Proportions: props/clothes/furniture real size; adults clearly taller than children; the older child a little taller (compare eye lines and crowns, not hair tufts).
+2. Bodies: two arms, two hands, five fingers (zoom held props), eyes the same size and level, no merged or extra limbs.
+3. Placement/perspective: nothing floats, nobody stands on furniture, one floor line, clothes hang on a rail or lie flat.
+4. Layout: furniture against walls, windows/doors plausible, no objects merging, no stray furniture edges (EP.10: a pink bed edge in a "no bed" shot).
+5. Composition: single subject centred (measure the subject's centre after the crop: EP.10 adults sat at 0.59 -> retaken centred), two characters balanced left/right with meeting eyelines, no crop through a head or a hand.
+
+A fail is retaken in Meta (Thinking mode), never fixed in pixels. First try what needs no new generation: a different crop window, in/out point or existing take (choosing a crop is not pixel editing). EP.9: the kids table two-shot crop `960:540:160:0` cut through the resting hands -> `1008:567:136:0` (bottom stops above a prop that must stay hidden) / `1056:594:112:0`; a full-length thumbnail art cut at the ankles -> knees-up crop of the same art. Re-render, prove the audio is unchanged (decoded samples identical, same LUFS) so speech QC carries over, re-read the contact sheet.
+
 ## 2. Decisions
 
 | Finding | Action |
@@ -114,6 +126,13 @@ every gap ≥ 0.2 s (finds the holes to cut and the second take of a line). Roun
 
 **Question tone and stutters (EP.13):** whisper on the exact window decides ("went to a party?" on the whole clip, a plain statement on the cut). Repeated or doubled words ("home
 home", a second "do") show in the windowed run; cut before them or retake. `scripts/ep6_chrome_tools/zf.py NAME a b crop` = 9 big frames of the used window, `q.sh NAME` = whisper + speech runs + pitch.
+
+**Split windows for repeated words (Everyday English EP.2, 2026-11-26):** whisper-small on the exact cut window can still HIDE a repeated word: T06 said
+"Let's have, have a surprise party" and whisper printed "Let's have a surprise party" on 1.3-5.3 and on 2.9-5.3 (word timestamps too). YouTube's automatic
+captions heard "have have" twice -> second render + second upload. Two sub-windows proved it at once: 3.0-3.55 "Let's have" + 3.62-4.6 "Have a surprise party!".
+Before rendering, run `asr.sh` on each accepted line in two overlapping halves (cut the line at a word gap) and compare word by word with the script; also
+prompt every line "every word exactly ONCE (no repeated words, no stutter)". `scripts/ep6_chrome_tools/kq.sh NAME a b` = whisper + speech runs + speaker and
+listener mouth strips + full frames for a two-shot.
 
 **The word check says nothing about the picture.** EP.8's host clips passed ASR and were uploaded without anyone looking at
 them; in one, Biscuit said "It's on your right" while pointing to the viewer's left. Look at a contact sheet of every clip

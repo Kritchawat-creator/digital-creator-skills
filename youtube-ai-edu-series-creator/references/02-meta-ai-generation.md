@@ -18,6 +18,19 @@ episode before relying on any number here.
 Yield per episode: 34 clips for 20 accepted cuts (EP.1), 43 for 22 (EP.2, about 2:1), 26 for 21 (EP.3, about
 1.2:1). EP.3 was better because most clips had a single character, so there was no listener to fail.
 
+**Thinking mode, always (owner, 2026-11-26: "Meta ai ใช้ Thinking mode ตลอด").** Select Meta AI's Thinking mode for
+every prompt, images and clips. Check that it's selected before each batch, read it back, and log it in `qc_log.txt`. Replies take
+longer, so wait with the background watcher. Never pick a paid or upgrade option. If Thinking is missing or refused, log
+it and tell the owner; don't work around it.
+
+**Thinking mode, every prompt (owner rule 2026-11-26: "Meta ai ใช้ Thinking mode ตลอด").** The composer has a mode button
+`[data-testid=composer-mode-dropdown-button]` whose text is the current mode; its Radix menu (open with a `pointerdown`, `pointerType:'mouse'`)
+holds `menuitemradio` "Instant" / "Thinking" with `aria-checked`. `scripts/ep6_chrome_tools/thinking.py [tab]` sets Thinking and reads it back;
+call it before every prompt (the Everyday English `meta.py` does, and stops if it fails). A reply made in Thinking mode carries a "Show thinking"
+button. Expect longer replies. Never touch paid or upgrade options; if Thinking is missing or refused, log it and tell the owner/coordinator.
+Measured in Thinking mode (Everyday English EP.3, 28 clips + 8 images, 0 refusals): images 26-53 s, 10 s clips 45-67 s per reply; attaching three
+images at once (`meta.py key1+key2+key3`, two character masters + a place) worked and the `previews` line showed 3 blobs.
+
 ## 2. Order of work
 
 1. **Character sheets** once per series: "Create an image. Character reference sheet …". Later prompts say
@@ -103,6 +116,11 @@ laughs. No laughing.
   never a white line" removes tooth flashes; "both front legs hang straight down, never points" stops gestures; pigeon host in a scene: "both eyes blink together, NO wink, wings behind the desk".
 - EP.13: a SLOW line must be asked word by word ("How... was... your... holiday..."), otherwise it is as fast as the FAST line. Check words per second of both.
 
+- Everyday English EP.2: "their feet are below the bottom edge of the picture" in a master prompt was ignored (feet drawn) -> crop the clips. Meta
+  animated an adult-alone waist-up master wider (more room, side view) but kept the place: accept. An edit prompt "remove the round circle patch from the
+  side of each sneaker" fixed a brand-like shoe detail and kept the scene. A two-take host line can come out natural then word-by-word and lose its first
+  word on take 2 (whisper "is my bag"): queue a spare host take at the end of the queue.
+
 **Two-take host line:** "says it TWICE: slowly, then a one-second pause, then at natural speed". Measured gaps
 between takes were 2.8–4.5 s and take 2 started anywhere from 5.9 to 7.0 s. Never assume where take 2 is; read
 it from the timeline (`03`).
@@ -130,6 +148,16 @@ Phrases that fixed specific failures:
 Meta sometimes edits inside "ONE continuous static shot": a character walked out of frame before the other spoke
 (usable after he left), a cut to a close-up between two takes (used as the second take), a hall swap mid-clip
 (fail). Check the contact sheet for cuts.
+
+### REAL clause (owner rule 2026-11-27, every prompt)
+
+Owner rule 2026-11-27 (hard gate): "ให้ สัดส่วน element และองค์ประกอบฉาก สมจริง สมมาตร สมเหตุสมผล" — element proportions and scene composition realistic, symmetric/balanced and logical. Paste this (adapted to the cast) into every image prompt and every clip prompt's tail:
+
+```
+A REALISTIC, LOGICAL, BALANCED picture: real-life proportions (props, clothes and furniture are their real size next to the people; grown-ups are clearly taller than the children; Ivy, who is seven, is a little TALLER than Toby, who is six, and their heads are about the same size); every person has two arms and two hands with five fingers each, both eyes the same size and on the same level, no merged or extra limbs; nothing floats, nobody stands or sits on furniture that is not a seat, one consistent floor line and perspective, clothes hang on hangers on a rail or lie flat believably; furniture stands against the walls and nothing merges into anything else; a balanced, symmetric composition: a single person stands in the CENTRE, two children balance left and right with their eyes meeting, no crop through a head or a hand.
+```
+
+Adult-alone reverse shots: "stands in the CENTRE of the picture, turned a little toward screen-LEFT, looking down to the left at the children out of the picture" (centred AND the eyeline still meets the children's shot). A deliberately wrong-size prop for a lesson ("too small") is a real smaller size (a toddler's shirt), never a doll-size object.
 
 ## 4. Refusals
 

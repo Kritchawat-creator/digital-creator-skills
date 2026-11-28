@@ -65,6 +65,7 @@ Rules:
 - **Chapters come from `build.py plan`**, never by hand. The first chapter is `00:00`, there are at least three,
   and each is at least 10 s long. EP.1's first draft had a chapter at 00:04 and had to be merged into 00:00.
 - The first two lines carry the search terms in natural sentences.
+- Every translated TITLE must be at most 100 characters (Everyday English EP.4: a 101-character Vietnamese title was dropped by Studio with no error and no row). Check `len()` of each title in the metadata doc before publishing, and read all five rows back after a reload.
 - The translations reuse everything from "📌" onward in English (section 4), so keep that part
   language-neutral.
 - **Read the live description of the previous episode before copying it.** EP.2 went up without the AI-note
